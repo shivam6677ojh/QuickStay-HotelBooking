@@ -82,36 +82,41 @@ const About = () => {
     ];
 
     return (
-        <div className="bg-gradient-to-br from-gray-50 via-white to-indigo-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950/30 min-h-screen">
+        <div className="relative bg-gradient-to-br from-purple-100 via-violet-100 to-fuchsia-100 dark:from-gray-900 dark:via-purple-900/10 dark:to-violet-900/10 min-h-screen overflow-hidden">
+            {/* Decorative background orbs - More vibrant */}
+            <div className="absolute top-20 right-10 w-96 h-96 bg-purple-400/35 dark:bg-purple-600/10 rounded-full blur-3xl animate-pulse -z-10"></div>
+            <div className="absolute bottom-20 left-10 w-80 h-80 bg-violet-400/35 dark:bg-violet-600/10 rounded-full blur-3xl animate-pulse -z-10" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-fuchsia-400/20 dark:bg-fuchsia-600/5 rounded-full blur-3xl animate-pulse -z-10" style={{ animationDelay: '2s' }}></div>
+
             {/* Hero Section */}
             <div 
                 ref={heroRef}
-                className={`relative overflow-hidden bg-gradient-to-r from-indigo-600 via-violet-600 to-pink-600 text-white py-20 md:py-32 transition-all duration-1000 ${heroInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                className={`relative overflow-hidden bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white py-20 md:py-32 transition-all duration-1000 ${heroInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
             >
                 {/* Animated Background Orbs */}
                 <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-fuchsia-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
                 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="text-center">
-                        <h1 className="text-5xl md:text-7xl font-playfair font-bold mb-6 animate-fade-up">
+                        <h1 className="text-5xl md:text-7xl font-playfair font-bold mb-6 animate-fade-up drop-shadow-lg">
                             About QuickStay
                         </h1>
-                        <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto animate-fade-up animation-delay-200">
+                        <p className="text-xl md:text-2xl text-white/95 max-w-3xl mx-auto animate-fade-up animation-delay-200 font-light leading-relaxed drop-shadow-md">
                             Connecting travelers with exceptional accommodations since 2020
                         </p>
                         <div className="mt-8 flex justify-center gap-4 animate-fade-up animation-delay-400">
                             <button
                                 onClick={() => navigate('/rooms')}
-                                className="px-8 py-3 bg-white text-indigo-600 rounded-full font-semibold hover:scale-105 transition-all shadow-lg hover:shadow-2xl cursor-pointer"
+                                className="px-8 py-4 bg-white text-purple-600 rounded-full font-bold hover:scale-105 transition-all shadow-xl hover:shadow-2xl cursor-pointer text-lg"
                             >
-                                Browse Hotels
+                                🏨 Browse Hotels
                             </button>
                             <button
                                 onClick={() => navigate('/contactHere')}
-                                className="px-8 py-3 bg-transparent border-2 border-white text-white rounded-full font-semibold hover:bg-white hover:text-indigo-600 transition-all cursor-pointer"
+                                className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-full font-bold hover:bg-white hover:text-purple-600 transition-all cursor-pointer text-lg shadow-lg"
                             >
-                                Contact Us
+                                📧 Contact Us
                             </button>
                         </div>
                     </div>
@@ -124,24 +129,24 @@ const About = () => {
                 className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 transition-all duration-1000 ${storyInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
             >
                 <div className="grid md:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 dark:text-white mb-6">
+                    <div className="space-y-6">
+                        <h2 className="text-4xl md:text-5xl font-playfair font-bold bg-gradient-to-r from-purple-700 via-violet-700 to-fuchsia-700 dark:from-purple-300 dark:via-violet-300 dark:to-fuchsia-300 bg-clip-text text-transparent mb-6">
                             Our Story
                         </h2>
-                        <div className="space-y-4 text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
-                            <p>
+                        <div className="space-y-4 text-gray-700 dark:text-gray-300 text-lg leading-relaxed font-light">
+                            <p className="bg-white/60 dark:bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-purple-100 dark:border-purple-900">
                                 QuickStay was born from a simple idea: travel accommodation booking should be 
                                 effortless, transparent, and delightful. In 2020, our founders—seasoned travelers 
                                 and tech enthusiasts—came together with a shared frustration about the complexity 
                                 of finding and booking the perfect place to stay.
                             </p>
-                            <p>
+                            <p className="bg-white/60 dark:bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-violet-100 dark:border-violet-900">
                                 What started as a small platform with just 50 partner hotels has blossomed into 
                                 a global network spanning over 150 countries. Today, we're proud to serve more 
                                 than half a million travelers annually, helping them discover everything from 
                                 boutique city hotels to luxurious beachfront resorts.
                             </p>
-                            <p>
+                            <p className="bg-white/60 dark:bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-fuchsia-100 dark:border-fuchsia-900">
                                 Our mission remains unchanged: to empower travelers with choices, confidence, 
                                 and unforgettable experiences. Every feature we build, every partner we onboard, 
                                 and every customer interaction is designed with your journey in mind.
@@ -149,12 +154,15 @@ const About = () => {
                         </div>
                     </div>
                     <div className="relative">
-                        <div className="absolute -inset-4 bg-gradient-to-r from-indigo-600 via-violet-600 to-pink-600 rounded-2xl blur-xl opacity-20 animate-pulse"></div>
-                        <img 
-                            src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" 
-                            alt="Luxury Hotel"
-                            className="relative rounded-2xl shadow-2xl w-full h-[500px] object-cover"
-                        />
+                        <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 rounded-3xl blur-2xl opacity-30 animate-pulse"></div>
+                        <div className="relative overflow-hidden rounded-3xl shadow-2xl group">
+                            <img 
+                                src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" 
+                                alt="Luxury Hotel"
+                                className="w-full h-[500px] object-cover transform transition-transform duration-700 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-purple-900/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -162,16 +170,16 @@ const About = () => {
             {/* Stats Section */}
             <div 
                 ref={statsRef}
-                className={`bg-gradient-to-r from-indigo-600 via-violet-600 to-pink-600 py-16 transition-all duration-1000 ${statsInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+                className={`bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 py-20 transition-all duration-1000 ${statsInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {stats.map((stat, index) => (
                             <div 
                                 key={index} 
-                                className="text-center transform hover:scale-110 transition-transform cursor-pointer"
+                                className="text-center transform hover:scale-110 transition-all duration-300 cursor-pointer bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20"
                             >
-                                <div className="text-4xl md:text-6xl font-bold text-white mb-2 font-playfair">
+                                <div className="text-5xl md:text-7xl font-bold text-white mb-3 font-playfair drop-shadow-lg">
                                     {stat.number}
                                 </div>
                                 <div className="text-white/90 text-lg font-medium">

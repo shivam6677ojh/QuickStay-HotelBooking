@@ -57,6 +57,24 @@ By default the server listens on `http://localhost:3000` and the API in the clie
 
 ## Admin setup
 - To create an admin locally for testing, open your Clerk dashboard, select the user, and set public metadata to include `{ "role": "admin" }`.
+  - To create an admin locally for testing, open your Clerk dashboard, select the user, and set public metadata to include `{ "role": "admin" }`.
+  - Alternatively, run the helper script to set the DB role (not recommended for production):
+
+```powershell
+cd server
+node server/scripts/setAdmin.js <clerk_user_id>
+```
+
+Quick operational promotion endpoint
+----------------------------------
+
+For quick initial setup you can also use the HTTP endpoint (not recommended for long-term use):
+
+POST /api/admin/promote
+- Requires the requester to be authenticated (Clerk) and supply the server-side `ADMIN_PROMOTE_TOKEN`.
+- Body: { "token": "<value>" } or header `x-admin-token: <value>`
+
+This endpoint will set the authenticated user's DB role to `admin`. Protect the `ADMIN_PROMOTE_TOKEN` and remove or disable this endpoint after you have at least one admin user configured in Clerk.
 
 ## Troubleshooting
 - 401 Unauthorized errors:

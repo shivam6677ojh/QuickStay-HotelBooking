@@ -1,4 +1,5 @@
 import User from "../models/UserModel.js";
+import { clerkClient } from '@clerk/clerk-sdk-node';
 
 export const protect = async (req, res, next) => {
     try {
@@ -56,16 +57,21 @@ export const adminOnly = async (req, res, next) => {
             });
         }
 
-        // 🚨 TEMPORARY DEVELOPMENT BYPASS - REMOVE IN PRODUCTION!
-        // TODO: Set proper admin role in Clerk before deploying
-        if (process.env.NODE_ENV !== 'production') {
-            console.log('⚠️  DEV MODE: Bypassing admin check for user:', req.user.email);
-            return next();
+        // Prefer Clerk public metadata for role checks to avoid DB-sync race conditions.
+        // This requires a server-side Clerk API key to be present in env vars.
+        let userRole = req.user?.role;
+        try {
+            const clerkUserId = req.auth?.userId;
+            if (clerkUserId) {
+                const clerkUser = await clerkClient.users.getUser(clerkUserId);
+                const clerkRole = clerkUser?.publicMetadata?.role || clerkUser?.unsafeMetadata?.role || null;
+                if (clerkRole) userRole = clerkRole;
+            }
+        } catch (clerkErr) {
+            console.warn('Warning: failed to fetch Clerk user for role check (check CLERK API key):', clerkErr.message || clerkErr);
+            // keep DB role as fallback
         }
 
-        // Check if user has admin or owner role
-        const userRole = req.user.role;
-        
         if (userRole !== 'admin' && userRole !== 'owner') {
             return res.status(403).json({ 
                 success: false, 

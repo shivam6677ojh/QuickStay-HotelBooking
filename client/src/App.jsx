@@ -17,10 +17,20 @@ import ListRoom from "./Pages/HotelOwner/ListRoom.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 import About from "./Pages/About";
 import AuthSetup from "./components/AuthSetup";
+import SessionTimeout from "./components/SessionTimeout";
+import AdminSetup from "./Pages/AdminSetup";
+import AdminLogin from "./Pages/Admin/AdminLogin";
+import AdminLayout from "./Pages/Admin/AdminLayout";
+import AdminDashboard from "./Pages/Admin/AdminDashboard";
+import AdminBookings from "./Pages/Admin/AdminBookings";
+import AdminHotels from "./Pages/Admin/AdminHotels";
+import AdminRooms from "./Pages/Admin/AdminRooms";
+import AdminUsers from "./Pages/Admin/AdminUsers";
 
 
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
+  const isAdminPath = useLocation().pathname.includes("/admin");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -58,8 +68,9 @@ const App = () => {
   return (
     <div>
       <AuthSetup />
-      {!isOwnerPath && <Navbar />}
-      <ThemeToggle />
+      <SessionTimeout />
+      {!isOwnerPath && !isAdminPath && <Navbar />}
+      {!isAdminPath && <ThemeToggle />}
   {/* HotelReg intentionally disabled during development; enable when needed */}
 
       <div className="min-h-[70vh]">
@@ -70,6 +81,21 @@ const App = () => {
             <Route path="/contactHere" element={<ContactHere />} />
             <Route path="/my-bookings" element={<MyBooking />} />
             <Route path="/about" element={<About />} />
+            <Route path="/admin-setup" element={<AdminSetup />} />
+
+            {/* Admin Portal Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminLayout />
+              </ProtectedRoute>
+            }>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="bookings" element={<AdminBookings />} />
+              <Route path="hotels" element={<AdminHotels />} />
+              <Route path="rooms" element={<AdminRooms />} />
+              <Route path="users" element={<AdminUsers />} />
+            </Route>
 
             {/* Protected Admin/Owner Routes */}
             <Route path="/owner" element={
@@ -86,7 +112,7 @@ const App = () => {
           </Routes>
         </div>
 
-        {!isOwnerPath && <Footer />}
+        {!isOwnerPath && !isAdminPath && <Footer />}
       </div>
   );
 };

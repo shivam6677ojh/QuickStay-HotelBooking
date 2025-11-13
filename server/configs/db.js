@@ -18,10 +18,14 @@ const connectDB = async () => {
     });
 
     try {
-        await mongoose.connect(process.env.MONGODB_URI);
+        const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/quickstay';
+        await mongoose.connect(uri);
     } catch (error) {
         console.error("MongoDB initial connection failed:", error.message);
-        process.exit(1);
+        // In development allow server to continue running so other features can be tested.
+        if (process.env.NODE_ENV === 'production') {
+            process.exit(1);
+        }
     }
 };
 
