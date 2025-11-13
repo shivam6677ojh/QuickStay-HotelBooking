@@ -97,7 +97,9 @@ const HotelRoom = () => {
                     queryFilters.sortBy = 'newest';
                 }
                 
+                console.log('Sending filters to API:', queryFilters);
                 const response = await roomService.getRooms(queryFilters);
+                console.log('Received rooms:', response.rooms?.length || 0, 'rooms');
                 setRooms(response.rooms || []);
             } catch (error) {
                 console.error('Error fetching rooms:', error);
@@ -149,13 +151,13 @@ const HotelRoom = () => {
     const { ref, inView } = useInView({ threshold: 0.1 });
     return (
         <div ref={ref} className='relative flex flex-col-reverse lg:flex-row items-start justify-between pt-28 md:pt-35 px-4 md:px-16 lg:px-24 xl:px-32 min-h-screen overflow-hidden'>
-            {/* Gradient Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 -z-10"></div>
+            {/* Gradient Background - Enhanced vibrant colors */}
+            <div className="absolute inset-0 bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 -z-10"></div>
             
-            {/* Animated gradient orbs */}
-            <div className="absolute top-20 left-20 w-96 h-96 bg-pink-400/20 dark:bg-pink-600/10 rounded-full blur-3xl animate-pulse -z-10"></div>
-            <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-3xl animate-pulse -z-10" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-400/20 dark:bg-purple-600/10 rounded-full blur-3xl animate-pulse -z-10" style={{ animationDelay: '2s' }}></div>
+            {/* Animated gradient orbs - More visible */}
+            <div className="absolute top-20 left-20 w-96 h-96 bg-pink-400/35 dark:bg-pink-600/10 rounded-full blur-3xl animate-pulse -z-10"></div>
+            <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-400/35 dark:bg-blue-600/10 rounded-full blur-3xl animate-pulse -z-10" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-400/30 dark:bg-purple-600/10 rounded-full blur-3xl animate-pulse -z-10" style={{ animationDelay: '2s' }}></div>
 
 
             {/* Left section: Rooms */}
@@ -243,64 +245,76 @@ const HotelRoom = () => {
             </div>
 
             {/* Right section: Filters */}
-            <div className="bg-white  dark:bg-gray-800 w-80 border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 max-lg:mb-8 min-lg:mt-16">
-                <div
-                    className={`flex items-center justify-between px-5 py-2.5 min-lg:border-b border-gray-300 dark:border-gray-700 ${openFilters && "border-b"
-                        }`}
-                >
-                    <p className="text-base font-medium text-gray-800 dark:text-gray-200">FILTERS</p>
+            <div className="relative w-80 max-lg:mb-8 min-lg:mt-16">
+                {/* decorative glow orb */}
+                <div className="pointer-events-none absolute -top-10 -right-10 w-56 h-56 rounded-full bg-gradient-to-br from-pink-300/30 via-purple-300/20 to-indigo-300/10 blur-3xl mix-blend-screen -z-10" />
+                <div className="pointer-events-none absolute -bottom-10 -left-8 w-56 h-56 rounded-full bg-gradient-to-br from-indigo-300/20 via-violet-300/10 to-pink-300/10 blur-3xl mix-blend-screen -z-10" />
 
-                    <div className="text-xs cursor-pointer">
-                        <span
-                            onClick={() => setopenFilters(!openFilters)}
-                            className="lg:hidden dark:text-gray-300 cursor-pointer"
-                        >
-                            {openFilters ? "HIDE" : "SHOW"}
-                        </span>
+                <div className="relative bg-gradient-to-br from-white/80 to-indigo-50/40 dark:from-gray-900/70 dark:via-indigo-900/30 dark:to-violet-900/20 border border-transparent dark:border-transparent rounded-xl p-0 overflow-hidden shadow-xl backdrop-blur-sm">
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-white/30 to-transparent dark:from-black/20 rounded-xl" />
+                    <div className="relative z-10 bg-transparent border border-transparent p-0">
+                        <div className="px-5 py-4 flex items-center justify-between">
+                            <p className="text-base font-medium text-gray-800 dark:text-gray-100">FILTERS</p>
 
-                        <span className="hidden lg:block hover:text-brand transition dark:text-gray-300 dark:hover:text-blue-400 cursor-pointer" onClick={clearFilters}>CLEAR</span>
-                    </div>
-                </div>
+                            <div className="text-xs">
+                                <span
+                                    onClick={() => setopenFilters(!openFilters)}
+                                    className="lg:hidden dark:text-gray-300 cursor-pointer"
+                                >
+                                    {openFilters ? "HIDE" : "SHOW"}
+                                </span>
 
-                <div className={`${openFilters ? 'h-auto' : "h-0 lg:h-auto"} overflow-hidden transition-all duration-700`}>
-                    <div className='px-5 pt-5'>
-                        <p className='font-medium text-gray-800 dark:text-gray-200 pb-2'>Popular filters</p>
-                        {roomTypes.map((room, index) => (
-                            <CheckBox 
-                                key={index} 
-                                label={room}
-                                selected={filters.roomTypes.includes(room)}
-                                onChange={handleRoomTypeChange}
-                            />
-                        ))}
+                                <span className="hidden lg:block hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-300 cursor-pointer" onClick={clearFilters}>CLEAR</span>
+                            </div>
+                        </div>
+
+                        <div className={`${openFilters ? 'h-auto' : "h-0 lg:h-auto"} overflow-hidden transition-all duration-700`}>
+                            <div className='px-5 pt-5'>
+                                <p className='font-medium text-gray-800 dark:text-gray-200 pb-2 flex items-center gap-2'>
+                                    <span className='inline-block w-2 h-2 rounded-full bg-indigo-400 shadow-[0_0_12px_rgba(99,102,241,0.6)]'></span>
+                                    Popular filters
+                                </p>
+                                {roomTypes.map((room, index) => (
+                                    <CheckBox 
+                                        key={index} 
+                                        label={room}
+                                        selected={filters.roomTypes.includes(room)}
+                                        onChange={handleRoomTypeChange}
+                                    />
+                                ))}
+                            </div>
+                            <div className='px-5 pt-5'>
+                                <p className='font-medium text-gray-800 dark:text-gray-200 pb-2 flex items-center gap-2'>
+                                    <span className='inline-block w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_12px_rgba(236,72,153,0.45)]'></span>
+                                    Price Range
+                                </p>
+                                {priceRange.map((range, index) => (
+                                    <CheckBox 
+                                        key={index} 
+                                        label={`$${range}`}
+                                        selected={filters.priceRange === range}
+                                        onChange={(checked) => handlePriceRangeChange(checked, range)}
+                                    />
+                                ))}
+                            </div>
+                            <div className='px-5 pt-5 mb-6'>
+                                <p className='font-medium text-gray-800 dark:text-gray-200 pb-2 flex items-center gap-2'>
+                                    <span className='inline-block w-2 h-2 rounded-full bg-violet-400 shadow-[0_0_12px_rgba(139,92,246,0.45)]'></span>
+                                    Sort By
+                                </p>
+                                {sortOptions.map((options, index) => (
+                                    <RadioButton 
+                                        key={index} 
+                                        label={options}
+                                        selected={filters.sortBy === options}
+                                        onChange={handleSortChange}
+                                    />
+                                ))}
+                            </div>
+                        </div>
                     </div>
-                    <div className='px-5 pt-5'>
-                        <p className='font-medium text-gray-800 dark:text-gray-200 pb-2'>Price Range</p>
-                        {priceRange.map((range, index) => (
-                            <CheckBox 
-                                key={index} 
-                                label={`$ ${range}`}
-                                selected={filters.priceRange === range}
-                                onChange={(checked) => handlePriceRangeChange(checked, range)}
-                            />
-                        ))}
-                    </div>
-                    <div className='px-5 pt-5 mb-6'>
-                        <p className='font-medium text-gray-800 dark:text-gray-200 pb-2'>Sort By</p>
-                        {sortOptions.map((options, index) => (
-                            <RadioButton 
-                                key={index} 
-                                label={options}
-                                selected={filters.sortBy === options}
-                                onChange={handleSortChange}
-                            />
-                        ))}
-                    </div>
-                    
                 </div>
             </div>
-
-
         </div>
     )
 }

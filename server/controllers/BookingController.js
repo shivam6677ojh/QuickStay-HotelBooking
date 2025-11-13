@@ -106,38 +106,60 @@ export const createBooking = async (req, res) => {
             guests: +guests,
         });
 
-        // Send email only if user data is available
-        if (req.user && req.user.email) {
+        // Send email - fetch user email from Clerk if not in DB
+        let userEmail = req.user?.email;
+        let userName = req.user?.name || 'Guest';
+
+        // If email not in DB, try to fetch from Clerk
+        if (!userEmail && req.auth?.userId) {
+            try {
+                const { clerkClient } = await import('@clerk/clerk-sdk-node');
+                const clerkUser = await clerkClient.users.getUser(req.auth.userId);
+                userEmail = clerkUser.emailAddresses?.[0]?.emailAddress;
+                userName = clerkUser.firstName ? `${clerkUser.firstName} ${clerkUser.lastName || ''}`.trim() : userName;
+                console.log(`📧 Fetched email from Clerk: ${userEmail}`);
+            } catch (clerkError) {
+                console.error('⚠️  Failed to fetch user from Clerk:', clerkError.message);
+            }
+        }
+
+        if (userEmail) {
             try {
                 const mailOptions = {
                     from: process.env.SENDER_EMAIL,
-                    to: req.user.email,
+                    to: userEmail,
                     subject: "Booking Confirmation - QuickStay",
                     html: `
-                    <h1>Your Booking Details</h1>
-                    <p>Dear ${req.user.name || 'Guest'},</p>
-                    <p>Your booking has been confirmed with the following details:</p>
-                    <ul>
-                        <li><strong>Hotel:</strong> ${roomData.hotel.name}</li>
-                        <li><strong>Room Type:</strong> ${roomData.roomType}</li>
-                        <li><strong>Check-In Date:</strong> ${new Date(checkInDate).toLocaleDateString()}</li>
-                        <li><strong>Check-Out Date:</strong> ${new Date(checkOutDate).toLocaleDateString()}</li>
-                        <li><strong>Total Price:</strong> $${totalPrice.toFixed(2)}</li>
-                        <li><strong>Guests:</strong> ${guests}</li>
-                    </ul>
-                    <p>We look forward to hosting you!</p>
-                    <p>Best regards,<br/>QuickStay Team</p>
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h1 style="color: #4F46E5;">Booking Confirmed! 🎉</h1>
+                        <p>Dear ${userName},</p>
+                        <p>Your booking has been confirmed with the following details:</p>
+                        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="margin: 10px 0;"><strong>Hotel:</strong> ${roomData.hotel.name}</li>
+                                <li style="margin: 10px 0;"><strong>Location:</strong> ${roomData.hotel.city || 'N/A'}</li>
+                                <li style="margin: 10px 0;"><strong>Room Type:</strong> ${roomData.roomType}</li>
+                                <li style="margin: 10px 0;"><strong>Check-In Date:</strong> ${new Date(checkInDate).toLocaleDateString()}</li>
+                                <li style="margin: 10px 0;"><strong>Check-Out Date:</strong> ${new Date(checkOutDate).toLocaleDateString()}</li>
+                                <li style="margin: 10px 0;"><strong>Number of Guests:</strong> ${guests}</li>
+                                <li style="margin: 10px 0; font-size: 18px;"><strong>Total Price:</strong> <span style="color: #4F46E5;">$${totalPrice.toFixed(2)}</span></li>
+                            </ul>
+                        </div>
+                        <p>We look forward to hosting you!</p>
+                        <p style="color: #6B7280; font-size: 14px;">If you need to cancel or modify your booking, please visit your account dashboard.</p>
+                        <p>Best regards,<br/><strong>QuickStay Team</strong></p>
+                    </div>
                     `
                 };
 
                 await transporter.sendMail(mailOptions);
-                console.log(`✅ Booking confirmation email sent to ${req.user.email}`);
+                console.log(`✅ Booking confirmation email sent to ${userEmail}`);
             } catch (emailError) {
                 console.error('⚠️  Failed to send confirmation email:', emailError.message);
                 // Don't fail the booking if email fails
             }
         } else {
-            console.log('⚠️  Skipping email - user data not available in database');
+            console.log('⚠️  Skipping email - user email not available');
         }
 
         console.log(`✅ Booking created for user ${userId}`);
@@ -226,7 +248,9 @@ export const cancelBooking = async (req, res) => {
     try {
         const { id } = req.params;
         
-        const booking = await Booking.findById(id);
+        const booking = await Booking.findById(id)
+            .populate('room')
+            .populate('hotel');
         
         if (!booking) {
             return res.status(404).json({
@@ -245,6 +269,60 @@ export const cancelBooking = async (req, res) => {
         
         booking.status = 'cancelled';
         await booking.save();
+
+        // Send cancellation email
+        let userEmail = req.user?.email;
+        let userName = req.user?.name || 'Guest';
+
+        // If email not in DB, try to fetch from Clerk
+        if (!userEmail && req.auth?.userId) {
+            try {
+                const { clerkClient } = await import('@clerk/clerk-sdk-node');
+                const clerkUser = await clerkClient.users.getUser(req.auth.userId);
+                userEmail = clerkUser.emailAddresses?.[0]?.emailAddress;
+                userName = clerkUser.firstName ? `${clerkUser.firstName} ${clerkUser.lastName || ''}`.trim() : userName;
+                console.log(`📧 Fetched email from Clerk for cancellation: ${userEmail}`);
+            } catch (clerkError) {
+                console.error('⚠️  Failed to fetch user from Clerk:', clerkError.message);
+            }
+        }
+
+        if (userEmail) {
+            try {
+                const mailOptions = {
+                    from: process.env.SENDER_EMAIL,
+                    to: userEmail,
+                    subject: "Booking Cancellation - QuickStay",
+                    html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h1 style="color: #DC2626;">Booking Cancelled</h1>
+                        <p>Dear ${userName},</p>
+                        <p>Your booking has been successfully cancelled. Here are the details:</p>
+                        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="margin: 10px 0;"><strong>Hotel:</strong> ${booking.hotel?.name || 'N/A'}</li>
+                                <li style="margin: 10px 0;"><strong>Room Type:</strong> ${booking.room?.roomType || 'N/A'}</li>
+                                <li style="margin: 10px 0;"><strong>Check-In Date:</strong> ${new Date(booking.checkInDate).toLocaleDateString()}</li>
+                                <li style="margin: 10px 0;"><strong>Check-Out Date:</strong> ${new Date(booking.checkOutDate).toLocaleDateString()}</li>
+                                <li style="margin: 10px 0;"><strong>Total Amount:</strong> $${booking.totalPrice?.toFixed(2) || '0.00'}</li>
+                            </ul>
+                        </div>
+                        <p style="color: #6B7280;">If you have any questions about refunds or need assistance, please contact our support team.</p>
+                        <p>We hope to serve you again soon!</p>
+                        <p>Best regards,<br/><strong>QuickStay Team</strong></p>
+                    </div>
+                    `
+                };
+
+                await transporter.sendMail(mailOptions);
+                console.log(`✅ Booking cancellation email sent to ${userEmail}`);
+            } catch (emailError) {
+                console.error('⚠️  Failed to send cancellation email:', emailError.message);
+                // Don't fail the cancellation if email fails
+            }
+        } else {
+            console.log('⚠️  Skipping cancellation email - user email not available');
+        }
         
         res.status(200).json({
             success: true,

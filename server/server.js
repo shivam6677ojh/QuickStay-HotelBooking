@@ -9,6 +9,7 @@ import HotelRoutes from "./routes/HotelRoutes.js";
 import connectCloudinary from "./configs/Cloudinary.js";
 import RoomRouter from "./routes/RoomRoutes.js";
 import BookingRouter from "./routes/BookingRoutes.js";
+import AdminRoutes from "./routes/AdminRoutes.js";
 
 connectDB()
 connectCloudinary()
@@ -26,6 +27,7 @@ app.use("/api/user", userRouter);
 app.use("/api/hotel", HotelRoutes)
 app.use("/api/room", RoomRouter)
 app.use("/api/booking", BookingRouter)
+app.use("/api/admin", AdminRoutes)
 
 app.get("/", (req, res) => {
     res.send("API is running fine")

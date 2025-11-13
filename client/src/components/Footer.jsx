@@ -3,73 +3,80 @@ import { assets } from '../assets/assets'
 
 const Footer = () => {
     return (
-    <div className='bg-gradient-to-b from-[#F6F9FC] dark:from-gray-900 to-white dark:to-gray-950 text-gray-500/80 dark:text-gray-400 pt-10 px-6 md:px-16 lg:px-24 xl:px-32 bottom-0 w-full animate-fade-in'>
-            <div className='flex flex-wrap justify-between gap-10 md:gap-6'>
-                <div className='max-w-80'>
-                    <img src={assets.logo} alt="logo" className='mb-4 h-8 md:h-9 invert dark:invert-0 transition-transform hover:scale-105 cursor-pointer' />
-                    <p className='text-sm'>
-                        Discover the world's most extraordinary places to stay, from boutique hotels to luxury villas and private islands.
-                    </p>
-                    <div className='flex items-center gap-4 mt-4'>
-                        
-                        <img src={assets.instagramIcon} alt="instagramIcon" className='w-6 cursor-pointer hover:scale-110 transition-transform dark:invert' />
-                        <img src={assets.facebookIcon} alt="facebookIcon" className='w-6 cursor-pointer hover:scale-110 transition-transform dark:invert' />
-                        <img src={assets.twitterIcon} alt="twitterIcon" className='w-6 cursor-pointer hover:scale-110 transition-transform dark:invert' />
-                        <img src={assets.linkendinIcon} alt="linkdinIcon" className='w-6 cursor-pointer hover:scale-110 transition-transform dark:invert' />
+        <footer className="bg-gradient-to-b from-white dark:from-gray-900 to-gray-50 dark:to-gray-950 text-gray-700 dark:text-gray-300 py-12 px-6 md:px-12 lg:px-24">
+            <div className="max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {/* Brand */}
+                    <div>
+                        <img src={assets.logo} alt="QuickStay" className="h-10 mb-3 invert dark:invert-0" />
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Discover extraordinary stays — curated hotels, villas and unique homes around the world.
+                        </p>
+
+                        <div className="flex items-center gap-3 mt-4">
+                            <a href="#" aria-label="Instagram" className="group">
+                                <img src={assets.instagramIcon} alt="Instagram" className="w-6 h-6 transition-transform group-hover:scale-110" />
+                            </a>
+                            <a href="#" aria-label="Facebook" className="group">
+                                <img src={assets.facebookIcon} alt="Facebook" className="w-6 h-6 transition-transform group-hover:scale-110" />
+                            </a>
+                            <a href="#" aria-label="Twitter" className="group">
+                                <img src={assets.twitterIcon} alt="Twitter" className="w-6 h-6 transition-transform group-hover:scale-110" />
+                            </a>
+                            <a href="#" aria-label="LinkedIn" className="group">
+                                <img src={assets.linkendinIcon} alt="LinkedIn" className="w-6 h-6 transition-transform group-hover:scale-110" />
+                            </a>
+                        </div>
+                    </div>
+
+                    {/* Company links */}
+                    <div>
+                        <h4 className="font-semibold mb-3 text-gray-900 dark:text-gray-100">Company</h4>
+                        <ul className="space-y-2 text-sm">
+                            <li><a className="hover:underline" href="#">About</a></li>
+                            <li><a className="hover:underline" href="#">Careers</a></li>
+                            <li><a className="hover:underline" href="#">Partners</a></li>
+                            <li><a className="hover:underline" href="#">Blog</a></li>
+                        </ul>
+                    </div>
+
+                    {/* Support links */}
+                    <div>
+                        <h4 className="font-semibold mb-3 text-gray-900 dark:text-gray-100">Support</h4>
+                        <ul className="space-y-2 text-sm">
+                            <li><a className="hover:underline" href="#">Help Center</a></li>
+                            <li><a className="hover:underline" href="#">Safety</a></li>
+                            <li><a className="hover:underline" href="#">Cancellation</a></li>
+                            <li><a className="hover:underline" href="#">Contact</a></li>
+                        </ul>
+                    </div>
+
+                    {/* Newsletter */}
+                    <div>
+                        <h4 className="font-semibold mb-3 text-gray-900 dark:text-gray-100">Stay updated</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Subscribe to get deals, travel inspiration and updates.</p>
+
+                        <form className="mt-4 flex" onSubmit={(e) => e.preventDefault()} aria-label="Subscribe to newsletter">
+                            <label htmlFor="footer-email" className="sr-only">Email address</label>
+                            <input id="footer-email" type="email" placeholder="Enter your email" className="flex-1 px-3 py-2 rounded-l-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none" />
+                            <button type="submit" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-r-md">Subscribe</button>
+                        </form>
+
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">We respect your privacy. Unsubscribe anytime.</p>
                     </div>
                 </div>
 
-                <div>
-                    <p className='font-playfair text-lg text-gray-700 dark:text-gray-300'>COMPANY</p>
-                    <ul className='mt-3 flex flex-col gap-2 text-sm'>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Press</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Partners</a></li>
-                    </ul>
-                </div>
+                <div className="border-t border-gray-200 dark:border-gray-800 mt-10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p className="text-sm">© {new Date().getFullYear()} QuickStay. All rights reserved.</p>
 
-                <div>
-                    <p className='font-playfair text-lg text-gray-700 dark:text-gray-300'>SUPPORT</p>
-                    <ul className='mt-3 flex flex-col gap-2 text-sm'>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Safety Information</a></li>
-                        <li><a href="#">Cancellation Options</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">Accessibility</a></li>
-                    </ul>
-                </div>
-
-                <div className='max-w-80 w-full sm:w-auto'>
-                    <p className='font-playfair text-lg text-gray-700 dark:text-gray-300'>STAY UPDATED</p>
-                    <p className='mt-3 text-sm'>
-                        Subscribe to our newsletter for inspiration and special offers.
-                    </p>
-                    <div className='flex items-center mt-4 w-full max-w-sm'>
-                        <input 
-                            type="email" 
-                            className='bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 rounded-l border border-gray-300 dark:border-gray-600 h-11 px-3 outline-none flex-1 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400' 
-                            placeholder='Your email' 
-                        />
-                        <button className='relative overflow-hidden flex items-center justify-center bg-gray-900 dark:bg-gray-800 hover:bg-gray-800 dark:hover:bg-gray-700 h-11 w-11 aspect-square rounded-r group transition-colors border border-gray-300 dark:border-gray-600 border-l-0 cursor-pointer'>
-                            {/* Arrow icon */}
-                            <img src={assets.arrowIcon} alt="arrow-icon" className='invert w-3.5 group-hover:translate-x-1 transition-transform' />
-                            <span className='pointer-events-none absolute inset-0 bg-shimmer opacity-0 group-hover:opacity-100 animate-shimmer'></span>
-                        </button>
+                    <div className="flex items-center gap-4 text-sm">
+                        <a href="#" className="hover:underline">Privacy</a>
+                        <a href="#" className="hover:underline">Terms</a>
+                        <a href="#" className="hover:underline">Sitemap</a>
                     </div>
                 </div>
             </div>
-            <hr className='border-gray-800 dark:border-gray-700 mt-12' />
-            <div className='flex flex-col md:flex-row gap-3 items-center text-gray-700 dark:text-gray-400 justify-between py-6'>
-                <p>© {new Date().getFullYear()} QuickStay. All rights reserved.</p>
-                <ul className='flex items-center gap-4'>
-                    <li><a href="#">Privacy</a></li>
-                    <li><a href="#">Terms</a></li>
-                    <li><a href="#">Sitemap</a></li>
-                </ul>
-            </div>
-        </div>
+        </footer>
     )
 }
 

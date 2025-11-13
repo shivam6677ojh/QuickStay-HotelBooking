@@ -1,6 +1,5 @@
 import multer from "multer";
-import { useOptimistic } from "react";
 
-const upload = multer({storage : multer.diskStorage({})})
+const upload = multer({ storage: multer.diskStorage({}) });
 
-export default upload
+export default upload;

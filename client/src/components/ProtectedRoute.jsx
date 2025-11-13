@@ -25,13 +25,8 @@ const ProtectedRoute = ({ children, requiredRole = 'admin' }) => {
         return <Navigate to="/" state={{ from: location }} replace />;
     }
 
-    // 🚨 TEMPORARY DEVELOPMENT BYPASS - REMOVE IN PRODUCTION!
-    // In development, allow any signed-in user to access admin panel
-    // TODO: Set proper admin role in Clerk before deploying
-    if (import.meta.env.DEV) {
-        console.warn('⚠️  DEV MODE: Bypassing admin role check');
-        return children;
-    }
+    // Ensure the user has the required role (admin/owner).
+    // Make sure to set public metadata in Clerk for admin users before deployment.
 
     // Check if user has the required role
     // In Clerk, you can set publicMetadata with role information

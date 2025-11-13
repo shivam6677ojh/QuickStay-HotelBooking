@@ -11,6 +11,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^4.13.23",
     "@clerk/express": "^1.7.42",
     "cloudinary": "^2.8.0",
     "cors": "^2.8.5",

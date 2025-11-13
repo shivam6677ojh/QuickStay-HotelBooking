@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets.js";
 import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
@@ -21,6 +21,9 @@ const Navbar = () => {
 
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showSearch, setShowSearch] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const searchRef = useRef(null);
 
     const { openSignIn } = useClerk();
     const { user } = useUser();
@@ -44,6 +47,39 @@ const Navbar = () => {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, [location.pathname]);
+
+    // Close search dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (searchRef.current && !searchRef.current.contains(event.target)) {
+                setShowSearch(false);
+            }
+        };
+
+        if (showSearch) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showSearch]);
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            navigate(`/rooms?destination=${encodeURIComponent(searchQuery.trim())}`);
+            setShowSearch(false);
+            setSearchQuery('');
+        }
+    };
+
+    const toggleSearch = () => {
+        setShowSearch(!showSearch);
+        if (showSearch) {
+            setSearchQuery('');
+        }
+    };
 
     return (
 
@@ -87,7 +123,44 @@ const Navbar = () => {
 
             {/* Desktop Right */}
             <div className="hidden md:flex items-center gap-4">
-                <img src={assets.searchIcon} alt="search" className={`${isScrolled && 'invert dark:invert-0'} ${!isScrolled && 'dark:invert'} h-7 transition-all duration-500 hover:scale-110 cursor-pointer`} />
+                {/* Search Icon with dropdown */}
+                <div className="relative flex items-center" ref={searchRef}>
+                    <button
+                        onClick={toggleSearch}
+                        className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                    >
+                        <img 
+                            src={assets.searchIcon} 
+                            alt="search" 
+                            className={`${isScrolled && 'invert dark:invert-0'} ${!isScrolled && 'dark:invert'} h-6 w-6 transition-all duration-500`}
+                        />
+                    </button>
+                    
+                    {/* Search Dropdown */}
+                    {showSearch && (
+                        <div className="absolute right-0 top-14 w-96 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-indigo-100 dark:border-indigo-900 p-4 animate-fade-in z-50">
+                            <form onSubmit={handleSearch} className="flex flex-col gap-3">
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="Search hotels, destinations..."
+                                        className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-sm"
+                                        autoFocus
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-lg hover:shadow-lg transition-all cursor-pointer font-semibold hover:scale-105 text-sm"
+                                    >
+                                        Search
+                                    </button>
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Try: "Mumbai", "Delhi", "Bangalore", or "Beach Hotels"</p>
+                            </form>
+                        </div>
+                    )}
+                </div>
 
                 {user ? (<UserButton >
                     <UserButton.MenuItems>

@@ -190,51 +190,74 @@ const RoomDetails = () => {
 
 
     return (
-        <div className='py-28 md:py-35 px-4 md:px-16 lg:px-24 xl:px-32 '>
-            {/*     rOOM dETAILS */}
+        <div className='relative py-28 md:py-35 px-4 md:px-16 lg:px-24 xl:px-32 min-h-screen overflow-hidden'>
+            {/* Luxury Deep Blue/Teal Background - Enhanced vibrant colors */}
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-100 via-blue-100 to-teal-100 dark:from-gray-900 dark:via-cyan-900/10 dark:to-teal-900/10 -z-10"></div>
+            
+            {/* Decorative glow orbs - More visible */}
+            <div className="absolute top-20 left-10 w-96 h-96 bg-cyan-400/40 dark:bg-cyan-600/10 rounded-full blur-3xl animate-pulse -z-10"></div>
+            <div className="absolute bottom-10 right-10 w-80 h-80 bg-teal-400/40 dark:bg-teal-600/10 rounded-full blur-3xl animate-pulse -z-10" style={{ animationDelay: '1.5s' }}></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-400/25 dark:bg-blue-600/5 rounded-full blur-3xl animate-pulse -z-10" style={{ animationDelay: '3s' }}></div>
 
-            <div className='flex flex-col md:flex-row items-start md:items-center gap-2'>
-                <h1 className='text-3xl md:text-4xl font-playfair'>{room.hotel.name} <span className='font-inter text-xs'>({room.roomType})</span>
+            <div className="relative z-10">
+            {/*     ROOM DETAILS */}
+
+            <div className='flex flex-col md:flex-row items-start md:items-center gap-3 mb-2'>
+                <h1 className='text-3xl md:text-5xl font-playfair font-bold bg-gradient-to-r from-cyan-700 via-blue-700 to-teal-700 dark:from-cyan-300 dark:via-blue-300 dark:to-teal-300 bg-clip-text text-transparent'>
+                    {room.hotel.name} <span className='font-inter text-base font-normal text-gray-600 dark:text-gray-400'>({room.roomType})</span>
                 </h1>
-                <p className='text-xs w-fit font-inter py-1.5 px-3 text-white bg-orange-500 rounded-full'>20% OFF</p>
+                <p className='text-xs w-fit font-semibold py-2 px-4 text-white bg-gradient-to-r from-orange-500 to-red-500 rounded-full shadow-lg animate-pulse'>✨ 20% OFF</p>
             </div>
 
             {/* Room Rating */}
-            <div className='flex items-center gap-1 text-gray-500 dark:text-gray-400 mt-2'>
+            <div className='flex items-center gap-2 mt-3 bg-white/70 dark:bg-gray-800/50 backdrop-blur-sm rounded-full px-4 py-2 w-fit shadow-md border border-cyan-100 dark:border-cyan-900'>
                 <StarRating />
-                <p className='ml-2'>200+ reviews</p>
+                <p className='ml-2 text-gray-700 dark:text-gray-300 font-medium'>200+ reviews</p>
             </div>
 
             {/* Room Address */}
-            <div className='flex items-center gap-1 text-gray-500 dark:text-gray-400 mt-2'>
-                <img src={assets.locationIcon} alt="location-icon" className='dark:invert' />
-                <span>{room?.hotel?.address || 'Location not specified'}</span>
+            <div className='flex items-center gap-2 text-gray-600 dark:text-gray-300 mt-3 bg-white/60 dark:bg-gray-800/40 backdrop-blur-sm rounded-lg px-4 py-2.5 w-fit shadow-md'>
+                <svg className="w-5 h-5 text-teal-600 dark:text-teal-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+                <span className="font-medium">{room?.hotel?.address || 'Location not specified'}</span>
             </div>
 
             {/* Room Image */}
-            <div className='flex flex-col lg:flex-row mt-6 gap-6'>
-                <div className='lg:w-1/2 w-full'>
-                    <img src={mainImage || room?.images?.[0] || assets.uploadArea} alt="Room - Image" className='w-full rounded-xl shadow-lg object-cover' />
+            <div className='flex flex-col lg:flex-row mt-8 gap-6'>
+                <div className='lg:w-1/2 w-full group relative overflow-hidden rounded-2xl shadow-2xl'>
+                    <img src={mainImage || room?.images?.[0] || assets.uploadArea} alt="Room - Image" className='w-full h-96 object-cover transition-transform duration-700 group-hover:scale-110' />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
                 <div className='grid grid-cols-2 gap-4 lg:w-1/2 w-full'>
                     {room?.images && room.images.length > 1 && room.images.map((image, index) => (
-                        <img onClick={() => setMainImage(image)} key={index} src={image} alt="Room Image" className={`w-full rounded-xl shadow-md object-cover cursor-pointer hover:opacity-80 transition ${mainImage === image && 'outline-3 outline-orange-500'}`} />
+                        <div key={index} className="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer">
+                            <img 
+                                onClick={() => setMainImage(image)} 
+                                src={image} 
+                                alt="Room Image" 
+                                className={`w-full h-44 object-cover transition-all duration-500 group-hover:scale-110 ${mainImage === image ? 'ring-4 ring-cyan-500 dark:ring-cyan-400' : 'hover:ring-2 hover:ring-teal-300'}`} 
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
                     ))}
                 </div>
             </div>
 
-            {/* Room Hightlights */}
+            {/* Room Highlights */}
 
-            <div className='mt-10 flex items-center justify-between'>
-                <h2 className='font-playfair md:text-3xl'>Experience Luxury Like Never Before</h2>
-                <p className='text-xl text-black dark:text-white font-bold'>${room.pricePerNignt || room.pricePerNight}/night</p>
-
+            <div className='mt-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-gradient-to-r from-cyan-100 to-teal-100 dark:from-cyan-900/20 dark:to-teal-900/20 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-cyan-200 dark:border-cyan-800'>
+                <h2 className='font-playfair text-2xl md:text-4xl font-bold bg-gradient-to-r from-cyan-700 to-teal-700 dark:from-cyan-300 dark:to-teal-300 bg-clip-text text-transparent'>Experience Luxury Like Never Before</h2>
+                <div className="flex flex-col items-end">
+                    <p className='text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-600 to-teal-600 dark:from-cyan-400 dark:to-teal-400 bg-clip-text text-transparent'>${room.pricePerNignt || room.pricePerNight}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">per night</p>
+                </div>
             </div>
-            <div className='flex flex-wrap items-center mt-3 mb-6 gap-4'>
+            <div className='flex flex-wrap items-center mt-6 mb-6 gap-3'>
                 {room.amenities?.map((item, index) => (
-                    <div key={index} className='flex items-center gap-3 px-3 py-2 rounded-lg bg-[#F3F4F6]/70 dark:bg-gray-800/70'>
+                    <div key={index} className='flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300 border border-cyan-100 dark:border-cyan-900 hover:scale-105 cursor-pointer'>
                         <img src={facilityIcons[item]} alt={item} className='w-5 h-5 dark:invert' />
-                        <p className='text-xs'>{item}</p>
+                        <p className='text-sm font-medium text-gray-700 dark:text-gray-200'>{item}</p>
                     </div>
                 ))}
             </div>
@@ -457,7 +480,7 @@ const RoomDetails = () => {
                 </div>
             )}
 
-
+            </div>
         </div>
     )
 }
