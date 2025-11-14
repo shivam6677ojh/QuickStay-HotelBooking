@@ -231,14 +231,27 @@ const RoomDetails = () => {
                 </div>
                 <div className='grid grid-cols-2 gap-4 lg:w-1/2 w-full'>
                     {room?.images && room.images.length > 1 && room.images.map((image, index) => (
-                        <div key={index} className="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer">
+                        <div 
+                            key={index} 
+                            className="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer hover:shadow-2xl transition-shadow duration-300"
+                            onClick={() => {
+                                console.log('Image clicked:', image);
+                                setMainImage(image);
+                            }}
+                        >
                             <img 
-                                onClick={() => setMainImage(image)} 
                                 src={image} 
-                                alt="Room Image" 
+                                alt={`Room View ${index + 1}`}
                                 className={`w-full h-44 object-cover transition-all duration-500 group-hover:scale-110 ${mainImage === image ? 'ring-4 ring-cyan-500 dark:ring-cyan-400' : 'hover:ring-2 hover:ring-teal-300'}`} 
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            {/* Click indicator */}
+                            <div className="absolute top-2 right-2 bg-white/90 dark:bg-gray-800/90 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <svg className="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </div>
                         </div>
                     ))}
                 </div>
