@@ -12,7 +12,7 @@ import HotelReg from "./components/HotelReg";
 import Layout from "./Pages/HotelOwner/Layout";
 import ThemeToggle from "./components/ThemeToggle";
 import Dashboard from "./Pages/HotelOwner/Dashboard.jsx";
-import Atroom from "./Pages/HotelOwner/Atroom.jsx";
+import Atroom from "./Pages/HotelOwner/AtRoom.jsx";
 import ListRoom from "./Pages/HotelOwner/ListRoom.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 import About from "./Pages/About";
