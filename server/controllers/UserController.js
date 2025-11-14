@@ -2,9 +2,15 @@
 
 export const userData = async (req,res) => {
     try {
-        const role = req.user.role;
-        const recentSearchedCites = req.user.recentSearchedCites
-        return res.status(200).json({success:true, role, recentSearchedCites})
+        const user = req.user;
+        return res.status(200).json({
+            success: true,
+            clerkId: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            recentSearchedCites: user.recentSearchedCites
+        })
     } catch (error) {
         return res.status(500).json({success:false, message:"Server Error"})
     }
@@ -37,6 +43,4 @@ export const storeRecentSearches = async (req,res) => {
         .status(500)
         .json({success: false , message: error.message});
     }
-
-
 };
