@@ -256,7 +256,11 @@ const RoomDetails = () => {
             <div className='flex flex-wrap items-center mt-6 mb-6 gap-3'>
                 {room.amenities?.map((item, index) => (
                     <div key={index} className='flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300 border border-cyan-100 dark:border-cyan-900 hover:scale-105 cursor-pointer'>
-                        <img src={facilityIcons[item]} alt={item} className='w-5 h-5 dark:invert' />
+                        {facilityIcons[item] ? (
+                            <img src={facilityIcons[item]} alt={item} className='w-5 h-5 dark:invert' onError={(e) => e.target.style.display = 'none'} />
+                        ) : (
+                            <span className="w-5 h-5 text-cyan-600 dark:text-cyan-400">✓</span>
+                        )}
                         <p className='text-sm font-medium text-gray-700 dark:text-gray-200'>{item}</p>
                     </div>
                 ))}
