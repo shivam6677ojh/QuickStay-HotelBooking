@@ -19,14 +19,18 @@ const connectDB = async () => {
 const sampleHotels = [
     {
         name: 'Grand Palace Hotel',
-        address: 'New York, USA',
-        description: 'Luxury hotel in the heart of New York City',
+        address: '123 Fifth Avenue, Manhattan',
+        city: 'New York',
+        description: 'Luxury hotel in the heart of New York City with stunning skyline views',
+        image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1200&q=80',
         owner: 'user_2oOg6XKjAJL9B7Y1wCfN3X8sE7G' // Replace with actual Clerk user ID
     },
     {
         name: 'Ocean View Resort',
-        address: 'Miami, Florida',
-        description: 'Beautiful beachfront resort with stunning ocean views',
+        address: '456 Beach Boulevard',
+        city: 'Miami',
+        description: 'Beautiful beachfront resort with stunning ocean views and private beach access',
+        image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&q=80',
         owner: 'user_2oOg6XKjAJL9B7Y1wCfN3X8sE7G' // Replace with actual Clerk user ID
     }
 ];
@@ -36,11 +40,12 @@ const sampleRooms = [
         roomType: 'Luxury Suite',
         pricePerNignt: 350,
         capacity: 4,
-        amenities: ['Free Wifi', 'Free Breakfast', 'Pool access', 'Mountain view'],
+        amenities: ['Free WiFi', 'Free Breakfast', 'Pool Access', 'Mountain View'],
         description: 'Spacious luxury suite with amazing city views',
         images: [
-            'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800',
-            'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800'
+            'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1200&q=80',
+            'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1200&q=80',
+            'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=1200&q=80'
         ],
         isAvailable: true
     },
@@ -48,11 +53,12 @@ const sampleRooms = [
         roomType: 'Double Bed',
         pricePerNignt: 200,
         capacity: 2,
-        amenities: ['Free Wifi', 'Free Breakfast', 'Free Services'],
+        amenities: ['Free WiFi', 'Free Breakfast', 'Room Service'],
         description: 'Comfortable double bed room perfect for couples',
         images: [
-            'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800',
-            'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800'
+            'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=1200&q=80',
+            'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=1200&q=80',
+            'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1200&q=80'
         ],
         isAvailable: true
     },
@@ -60,10 +66,11 @@ const sampleRooms = [
         roomType: 'Single Bed',
         pricePerNignt: 120,
         capacity: 1,
-        amenities: ['Free Wifi', 'Free Services'],
+        amenities: ['Free WiFi', 'Room Service'],
         description: 'Cozy single room for solo travelers',
         images: [
-            'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800'
+            'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1200&q=80',
+            'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200&q=80'
         ],
         isAvailable: true
     },
@@ -71,11 +78,12 @@ const sampleRooms = [
         roomType: 'Family Suite',
         pricePerNignt: 450,
         capacity: 6,
-        amenities: ['Free Wifi', 'Free Breakfast', 'Pool access', 'Mountain view', 'Free Services'],
+        amenities: ['Free WiFi', 'Free Breakfast', 'Pool Access', 'Mountain View', 'Room Service'],
         description: 'Large family suite with multiple bedrooms',
         images: [
-            'https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd0?w=800',
-            'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=800'
+            'https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd0?w=1200&q=80',
+            'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=1200&q=80',
+            'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=1200&q=80'
         ],
         isAvailable: true
     }
