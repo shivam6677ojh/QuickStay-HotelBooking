@@ -21,17 +21,19 @@ const sampleHotels = [
         name: 'Grand Palace Hotel',
         address: '123 Fifth Avenue, Manhattan',
         city: 'New York',
+        contact: '+1-212-555-0100',
         description: 'Luxury hotel in the heart of New York City with stunning skyline views',
         image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1200&q=80',
-        owner: 'user_2oOg6XKjAJL9B7Y1wCfN3X8sE7G' // Replace with actual Clerk user ID
+        owner: 'user_34e792YUzD2Ml7ourZl6rKVY7lx' // Your Clerk user ID
     },
     {
         name: 'Ocean View Resort',
         address: '456 Beach Boulevard',
         city: 'Miami',
+        contact: '+1-305-555-0200',
         description: 'Beautiful beachfront resort with stunning ocean views and private beach access',
         image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&q=80',
-        owner: 'user_2oOg6XKjAJL9B7Y1wCfN3X8sE7G' // Replace with actual Clerk user ID
+        owner: 'user_34e792YUzD2Ml7ourZl6rKVY7lx' // Your Clerk user ID
     }
 ];
 
@@ -98,9 +100,32 @@ const seedData = async () => {
         await Room.deleteMany({});
         await Hotel.deleteMany({});
 
+        // Ensure user exists or create one
+        console.log('Checking for user...');
+        let user = await User.findById('user_34e792YUzD2Ml7ourZl6rKVY7lx');
+        
+        if (!user) {
+            console.log('User not found, creating a sample user...');
+            user = await User.create({
+                _id: 'user_34e792YUzD2Ml7ourZl6rKVY7lx',
+                name: 'Hotel Owner',
+                email: 'owner@quickstay.com',
+                role: 'owner'
+            });
+            console.log('✅ Created sample user');
+        } else {
+            console.log('✅ User exists');
+        }
+
+        // Update hotel data with user's MongoDB _id
+        const hotelsWithOwner = sampleHotels.map(hotel => ({
+            ...hotel,
+            owner: user._id
+        }));
+
         // Create hotels
         console.log('Creating hotels...');
-        const createdHotels = await Hotel.insertMany(sampleHotels);
+        const createdHotels = await Hotel.insertMany(hotelsWithOwner);
         console.log(`✅ Created ${createdHotels.length} hotels`);
 
         // Create rooms for each hotel
