@@ -5,7 +5,6 @@ import Booking from "../models/BookingModel.js"
 import Room from "../models/RoomModel.js";
 import Hotel from "../models/HotelModel.js";
 import transporter from "../configs/Nodemailer.js";
-import { fr } from "date-fns/locale";
 
 // Helper function to check availability
 const checkRoomAvailability = async (checkInDate, checkOutDate, room) => {
