@@ -11,20 +11,14 @@ import RoomRouter from "./routes/RoomRoutes.js";
 import BookingRouter from "./routes/BookingRoutes.js";
 import AdminRoutes from "./routes/AdminRoutes.js";
 
-connectDB()
-connectCloudinary()
 const app = express()
 
-
+// Initialize connections (don't wait for them to avoid blocking)
+connectDB().catch(err => console.error('DB connection error:', err));
+connectCloudinary().catch(err => console.error('Cloudinary connection error:', err));
 
 app.use(cors());
 app.use(express.json());
-
-// Debug middleware to log all requests
-app.use((req, res, next) => {
-    console.log(`📥 ${req.method} ${req.url}`);
-    next();
-});
 
 app.use(clerkMiddleware());
 
@@ -41,8 +35,13 @@ app.get("/", (req, res) => {
     console.log("API is running fine")
 })
 
-const PORT = process.env.PORT || 3000;
+// For Vercel serverless deployment
+export default app;
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`)
-}); 
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`)
+    });
+} 
