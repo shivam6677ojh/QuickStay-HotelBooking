@@ -13,6 +13,20 @@ const MyBooking = () => {
     const [filter, setFilter] = useState('all') // all, pending, confirmed, cancelled
     const [cancellingId, setCancellingId] = useState(null)
 
+    // Helper function to get image URL
+    const getImageUrl = (booking) => {
+        // Try room images first
+        if (booking.room?.images && booking.room.images.length > 0) {
+            return booking.room.images[0]
+        }
+        // Try hotel image
+        if (booking.hotel?.image) {
+            return booking.hotel.image
+        }
+        // Fallback placeholder
+        return 'https://via.placeholder.com/400x300?text=No+Image'
+    }
+
     useEffect(() => {
         if (!isSignedIn) {
             toast.info('Please sign in to view your bookings')
@@ -33,6 +47,12 @@ const MyBooking = () => {
             console.log('Fetching bookings...')
             const response = await bookingService.getUserBookings()
             console.log('Bookings response:', response)
+            console.log('First booking data:', response.bookings?.[0])
+            if (response.bookings?.[0]) {
+                console.log('Room data:', response.bookings[0].room)
+                console.log('Hotel data:', response.bookings[0].hotel)
+                console.log('Room images:', response.bookings[0].room?.images)
+            }
             setBookings(response.bookings || [])
         } catch (error) {
             console.error('Error fetching bookings:', error)
@@ -158,11 +178,14 @@ const MyBooking = () => {
                                 {/* Hotel Image */}
                                 <div className="relative group overflow-hidden rounded-xl shadow-md">
                                     <img
-                                        src={booking.room?.images?.[0] || booking.hotel?.image || '/placeholder.jpg'}
-                                        alt="hotel-img"
+                                        src={getImageUrl(booking)}
+                                        alt={`${booking.hotel?.name || 'Hotel'} - ${booking.room?.roomType || 'Room'}`}
                                         className="w-full md:w-44 h-32 md:h-28 object-cover cursor-pointer transition-transform duration-500 group-hover:scale-110"
                                         onClick={() => booking.room?._id && navigate(`/rooms/${booking.room._id}`)}
-                                        onError={(e) => { e.target.src = '/placeholder.jpg' }}
+                                        onError={(e) => { 
+                                            console.error('Image failed to load:', e.target.src)
+                                            e.target.src = 'https://via.placeholder.com/400x300?text=No+Image' 
+                                        }}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 </div>
@@ -235,14 +258,18 @@ const MyBooking = () => {
                                         {cancellingId === booking._id ? 'Cancelling...' : '✕ Cancel Booking'}
                                     </button>
                                 )}
-                                {booking.room?._id && (
-                                    <button
-                                        onClick={() => navigate(`/rooms/${booking.room._id}`)}
-                                        className="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl hover:shadow-lg transition-all text-sm font-semibold cursor-pointer hover:scale-105"
-                                    >
-                                        View Room →
-                                    </button>
-                                )}
+                                <button
+                                    onClick={() => {
+                                        if (booking.room?._id) {
+                                            navigate(`/rooms/${booking.room._id}`)
+                                        } else {
+                                            toast.error('Room information not available')
+                                        }
+                                    }}
+                                    className="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl hover:shadow-lg transition-all text-sm font-semibold cursor-pointer hover:scale-105"
+                                >
+                                    View Room →
+                                </button>
                             </div>
                         </div>
                     ))}
