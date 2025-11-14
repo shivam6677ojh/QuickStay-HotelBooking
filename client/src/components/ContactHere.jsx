@@ -1,4 +1,6 @@
 import React from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // The import 'remixicon/fonts/remixicon.css' was causing an error.
 // The useEffect hook below now dynamically adds the stylesheet link to the document's head,
@@ -30,6 +32,8 @@ const App = () => {
 
     return (
         <section className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-12 font-sans">
+            {/* Toast container placed here so toasts appear on the top-right */}
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
             {/* Main container with entry animation */}
             <div 
                 className={`
@@ -73,7 +77,22 @@ const App = () => {
                         <h3 className="text-3xl font-bold text-gray-800 mb-8">
                             Contact Us
                         </h3>
-                        <form className="space-y-6">
+                        <form className="space-y-6" onSubmit={(e) => {
+                            e.preventDefault();
+                            // Show a toast on the right side when message is sent
+                            toast.success('Message sent successfully', {
+                                position: 'top-right',
+                                autoClose: 3000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                            });
+                            // Optionally, reset form fields here if desired
+                            const form = e.target;
+                            form.reset();
+                        }}>
                             <div>
                                 <label htmlFor="name" className="block text-gray-600 font-medium mb-2">
                                     Full Name
@@ -116,6 +135,8 @@ const App = () => {
                             >
                                 Send Message
                             </button>
+
+
                         </form>
                     </div>
                 </div>

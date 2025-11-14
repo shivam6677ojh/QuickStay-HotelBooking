@@ -3,8 +3,9 @@ import { clerkClient } from '@clerk/clerk-sdk-node';
 
 export const protect = async (req, res, next) => {
     try {
-        // clerkMiddleware should populate req.auth; be defensive if it's missing
-        const userId = req.auth?.userId;
+        // Call req.auth() as a function (new Clerk API)
+        const auth = await req.auth();
+        const userId = auth?.userId;
 
         if (!userId) {
             return res
@@ -33,7 +34,8 @@ export const protect = async (req, res, next) => {
             } catch (createError) {
                 console.error('❌ Failed to create user:', createError.message);
                 req.user = null;
-                req.auth.userId = userId;
+                const auth = await req.auth();
+                req.auth.userId = auth?.userId;
                 return next();
             }
         }
@@ -61,7 +63,8 @@ export const adminOnly = async (req, res, next) => {
         // This requires a server-side Clerk API key to be present in env vars.
         let userRole = req.user?.role;
         try {
-            const clerkUserId = req.auth?.userId;
+            const auth = await req.auth();
+            const clerkUserId = auth?.userId;
             if (clerkUserId) {
                 const clerkUser = await clerkClient.users.getUser(clerkUserId);
                 const clerkRole = clerkUser?.publicMetadata?.role || clerkUser?.unsafeMetadata?.role || null;
