@@ -4,6 +4,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const connectDB = async () => {
+    // If already connected, return existing connection
+    if (mongoose.connection.readyState >= 1) {
+        return mongoose.connection;
+    }
+
     // Attach event listeners
     mongoose.connection.on("connected", () => {
         console.log("MongoDB connected successfully");
@@ -20,12 +25,11 @@ const connectDB = async () => {
     try {
         const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/quickstay';
         await mongoose.connect(uri);
+        return mongoose.connection;
     } catch (error) {
         console.error("MongoDB initial connection failed:", error.message);
-        // In development allow server to continue running so other features can be tested.
-        if (process.env.NODE_ENV === 'production') {
-            process.exit(1);
-        }
+        // In serverless, don't exit - just log the error
+        throw error;
     }
 };
 
