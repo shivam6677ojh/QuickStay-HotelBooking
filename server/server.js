@@ -15,25 +15,53 @@ const app = express()
 
 // MongoDB connection caching for serverless
 let cachedDb = null;
+let isConnecting = false;
 
-async function initDB() {
+async function ensureDBConnection() {
     if (cachedDb) {
         return cachedDb;
     }
+    
+    // Prevent multiple simultaneous connection attempts
+    if (isConnecting) {
+        // Wait for the existing connection attempt
+        while (isConnecting) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        return cachedDb;
+    }
+    
+    isConnecting = true;
     try {
+        console.log('Initializing database connection...');
         cachedDb = await connectDB();
         await connectCloudinary();
+        console.log('Database connection established');
     } catch (error) {
         console.error('Connection initialization error:', error);
+        throw error;
+    } finally {
+        isConnecting = false;
     }
     return cachedDb;
 }
 
-// Initialize connections
-initDB();
-
 app.use(cors());
 app.use(express.json());
+
+// Middleware to ensure DB connection before processing requests
+app.use(async (req, res, next) => {
+    try {
+        await ensureDBConnection();
+        next();
+    } catch (error) {
+        console.error('Database connection error:', error);
+        res.status(503).json({ 
+            success: false, 
+            message: 'Database connection failed. Please try again.' 
+        });
+    }
+});
 
 app.use(clerkMiddleware());
 
