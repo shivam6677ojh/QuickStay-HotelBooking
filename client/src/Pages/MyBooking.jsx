@@ -158,10 +158,11 @@ const MyBooking = () => {
                                 {/* Hotel Image */}
                                 <div className="relative group overflow-hidden rounded-xl shadow-md">
                                     <img
-                                        src={booking.room?.images?.[0] || '/placeholder.jpg'}
+                                        src={booking.room?.images?.[0] || booking.hotel?.image || '/placeholder.jpg'}
                                         alt="hotel-img"
                                         className="w-full md:w-44 h-32 md:h-28 object-cover cursor-pointer transition-transform duration-500 group-hover:scale-110"
-                                        onClick={() => navigate(`/rooms/${booking.room._id}`)}
+                                        onClick={() => booking.room?._id && navigate(`/rooms/${booking.room._id}`)}
+                                        onError={(e) => { e.target.src = '/placeholder.jpg' }}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 </div>
@@ -169,7 +170,7 @@ const MyBooking = () => {
                                 {/* Hotel Info */}
                                 <div className="flex flex-col justify-center">
                                     <p className="font-playfair text-2xl text-gray-900 dark:text-gray-100 hover:text-amber-600 dark:hover:text-amber-400 transition cursor-pointer"
-                                        onClick={() => navigate(`/rooms/${booking.room._id}`)}>
+                                        onClick={() => booking.room?._id && navigate(`/rooms/${booking.room._id}`)}>
                                         {booking.hotel?.name || 'Hotel'} 
                                         <span className="text-sm text-gray-600 dark:text-gray-400 font-sans"> ({booking.room?.roomType || 'Room'})</span>
                                     </p>
@@ -234,12 +235,14 @@ const MyBooking = () => {
                                         {cancellingId === booking._id ? 'Cancelling...' : '✕ Cancel Booking'}
                                     </button>
                                 )}
-                                <button
-                                    onClick={() => navigate(`/rooms/${booking.room._id}`)}
-                                    className="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl hover:shadow-lg transition-all text-sm font-semibold cursor-pointer hover:scale-105"
-                                >
-                                    View Room →
-                                </button>
+                                {booking.room?._id && (
+                                    <button
+                                        onClick={() => navigate(`/rooms/${booking.room._id}`)}
+                                        className="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl hover:shadow-lg transition-all text-sm font-semibold cursor-pointer hover:scale-105"
+                                    >
+                                        View Room →
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))}
