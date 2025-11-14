@@ -13,9 +13,24 @@ import AdminRoutes from "./routes/AdminRoutes.js";
 
 const app = express()
 
-// Initialize connections (don't wait for them to avoid blocking)
-connectDB().catch(err => console.error('DB connection error:', err));
-connectCloudinary().catch(err => console.error('Cloudinary connection error:', err));
+// MongoDB connection caching for serverless
+let cachedDb = null;
+
+async function initDB() {
+    if (cachedDb) {
+        return cachedDb;
+    }
+    try {
+        cachedDb = await connectDB();
+        await connectCloudinary();
+    } catch (error) {
+        console.error('Connection initialization error:', error);
+    }
+    return cachedDb;
+}
+
+// Initialize connections
+initDB();
 
 app.use(cors());
 app.use(express.json());
