@@ -13,6 +13,8 @@ const AdminRooms = () => {
     try {
       setLoading(true);
       const response = await apiClient.get('/admin/rooms');
+      console.log('Admin Rooms Response:', response.data);
+      console.log('Total rooms fetched:', response.data.rooms?.length || 0);
       setRooms(response.data.rooms || []);
     } catch (error) {
       console.error('Error fetching rooms:', error);
@@ -49,7 +51,7 @@ const AdminRooms = () => {
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Manage Rooms</h1>
-        <p className="text-gray-600">View and manage all rooms on the platform</p>
+        <p className="text-gray-600">View and manage all rooms on the platform ({rooms.length} total)</p>
       </div>
 
       {/* Rooms Grid */}
@@ -62,30 +64,44 @@ const AdminRooms = () => {
           rooms.map((room) => (
             <div key={room._id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
               {/* Room Image */}
-              <div className="h-48 bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white text-4xl">
-                🛏️
+              <div className="h-48 overflow-hidden bg-gray-200">
+                {room.images && room.images.length > 0 ? (
+                  <img 
+                    src={room.images[0]} 
+                    alt={room.roomType || 'Room'} 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'https://via.placeholder.com/400x300?text=Room+Image';
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-600 text-white text-4xl">
+                    🛏️
+                  </div>
+                )}
               </div>
 
               {/* Room Info */}
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{room.title || 'Untitled Room'}</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{room.roomType || 'Untitled Room'}</h3>
                 <p className="text-sm text-gray-600 mb-4">
-                  {room.hotel?.name || 'No hotel'} - {room.hotel?.location || 'No location'}
+                  {room.hotel?.name || 'No hotel'} - {room.hotel?.city || 'No location'}
                 </p>
 
                 {/* Room Details */}
                 <div className="space-y-2 mb-4 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Price:</span>
-                    <span className="font-semibold text-gray-900">${room.price || 0}/night</span>
+                    <span className="font-semibold text-gray-900">${Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}/night</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Capacity:</span>
-                    <span className="font-semibold text-gray-900">{room.capacity || 0} guests</span>
+                    <span className="font-semibold text-gray-900">{room.capacity || 2} guests</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Size:</span>
-                    <span className="font-semibold text-gray-900">{room.size || 0} sq ft</span>
+                    <span className="text-gray-600">Amenities:</span>
+                    <span className="font-semibold text-gray-900">{room.amenities?.length || 0}</span>
                   </div>
                 </div>
 

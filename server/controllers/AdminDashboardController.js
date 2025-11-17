@@ -57,8 +57,10 @@ export const getAllHotels = async (req, res) => {
 export const getAllRooms = async (req, res) => {
   try {
     const rooms = await Room.find()
-      .populate('hotel', 'name location')
+      .populate('hotel', 'name city')
       .sort({ createdAt: -1 });
+    
+    console.log(`📋 Admin fetched ${rooms.length} rooms`);
     
     res.json({ success: true, rooms });
   } catch (error) {
@@ -154,9 +156,16 @@ export const getDashboardStats = async (req, res) => {
     const totalRooms = await Room.countDocuments();
     const totalBookings = await Booking.countDocuments();
     
+    console.log('📊 Admin Dashboard Stats:', {
+      totalUsers,
+      totalHotels,
+      totalRooms,
+      totalBookings
+    });
+    
     // Recent bookings
     const recentBookings = await Booking.find()
-      .populate('room', 'title')
+      .populate('room', 'roomType')
       .populate('user', 'name email')
       .sort({ createdAt: -1 })
       .limit(5);
