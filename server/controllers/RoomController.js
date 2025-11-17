@@ -247,27 +247,21 @@ export const getRoomById = async (req, res) => {
     }
 }
 
-// Api to get all rooms for a specific hotel
+// Api to get all rooms for owner
 
 export const getOwnerRoom = async (req, res) => {
     try {
-        // For testing - get any hotel's rooms since we don't have user-hotel mapping yet
-        const hotel = await Hotel.findOne({});
+        // Get all rooms (not just from one hotel)
+        const rooms = await Room.find({}).populate("hotel");
         
-        if (!hotel) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "No hotel found" 
-            });
-        }
-        
-        const rooms = await Room.find({ hotel: hotel._id }).populate("hotel");
+        console.log(`📋 Owner fetched ${rooms.length} total rooms`);
     
         res.status(200).json({ 
             success: true, 
             rooms 
         });
     } catch (error) {
+        console.error('❌ Error fetching owner rooms:', error);
         res.status(500).json({ 
             success: false, 
             message: error.message 
