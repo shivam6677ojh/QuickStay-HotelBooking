@@ -97,9 +97,9 @@ const MyBooking = () => {
         )
     }
 
-    const filteredBookings = filter === 'all' 
-        ? bookings 
-        : bookings.filter(b => b.status === filter)
+    const filteredBookings = Array.isArray(bookings) 
+        ? (filter === 'all' ? bookings : bookings.filter(b => b?.status === filter))
+        : [];
 
     if (loading) {
         return (

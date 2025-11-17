@@ -262,12 +262,12 @@ const RoomDetails = () => {
             <div className='mt-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-gradient-to-r from-cyan-100 to-teal-100 dark:from-cyan-900/20 dark:to-teal-900/20 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-cyan-200 dark:border-cyan-800'>
                 <h2 className='font-playfair text-2xl md:text-4xl font-bold bg-gradient-to-r from-cyan-700 to-teal-700 dark:from-cyan-300 dark:to-teal-300 bg-clip-text text-transparent'>Experience Luxury Like Never Before</h2>
                 <div className="flex flex-col items-end">
-                    <p className='text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-600 to-teal-600 dark:from-cyan-400 dark:to-teal-400 bg-clip-text text-transparent'>${room.pricePerNignt || room.pricePerNight}</p>
+                    <p className='text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-600 to-teal-600 dark:from-cyan-400 dark:to-teal-400 bg-clip-text text-transparent'>${Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">per night</p>
                 </div>
             </div>
             <div className='flex flex-wrap items-center mt-6 mb-6 gap-3'>
-                {room.amenities?.map((item, index) => (
+                {room.amenities && room.amenities.length > 0 ? room.amenities.map((item, index) => (
                     <div key={index} className='flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300 border border-cyan-100 dark:border-cyan-900 hover:scale-105 cursor-pointer'>
                         {facilityIcons[item] ? (
                             <img src={facilityIcons[item]} alt={item} className='w-5 h-5 dark:invert' onError={(e) => e.target.style.display = 'none'} />
@@ -276,7 +276,7 @@ const RoomDetails = () => {
                         )}
                         <p className='text-sm font-medium text-gray-700 dark:text-gray-200'>{item}</p>
                     </div>
-                ))}
+                )) : <p className='text-gray-500 dark:text-gray-400'>No amenities listed</p>}
             </div>
 
 
@@ -294,6 +294,7 @@ const RoomDetails = () => {
                             name='checkIn'
                             value={bookingData.checkIn}
                             onChange={handleInputChange}
+                            min={new Date().toISOString().split('T')[0]}
                             className='width-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' 
                             required 
                         />
@@ -309,6 +310,7 @@ const RoomDetails = () => {
                             name='checkOut'
                             value={bookingData.checkOut}
                             onChange={handleInputChange}
+                            min={bookingData.checkIn || new Date().toISOString().split('T')[0]}
                             className='width-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' 
                             required 
                         />

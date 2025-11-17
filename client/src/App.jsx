@@ -26,6 +26,7 @@ import AdminBookings from "./Pages/Admin/AdminBookings";
 import AdminHotels from "./Pages/Admin/AdminHotels";
 import AdminRooms from "./Pages/Admin/AdminRooms";
 import AdminUsers from "./Pages/Admin/AdminUsers";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 
 const App = () => {
@@ -66,6 +67,7 @@ const App = () => {
   }
 
   return (
+    <ErrorBoundary>
     <div>
       <AuthSetup />
       <SessionTimeout />
@@ -114,6 +116,7 @@ const App = () => {
 
         {!isOwnerPath && !isAdminPath && <Footer />}
       </div>
+    </ErrorBoundary>
   );
 };
 

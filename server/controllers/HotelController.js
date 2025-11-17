@@ -7,6 +7,22 @@ export const createHotel = async (req, res) => {
         const { name, address, contact, city } = req.body;
         const owner = req.auth.userId;
 
+        // Validate required fields
+        if (!name || !address || !contact || !city) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "All fields (name, address, contact, city) are required" 
+            });
+        }
+
+        // Validate contact format (basic validation)
+        if (contact && !/^\+?[1-9]\d{1,14}$/.test(contact.replace(/[\s-]/g, ''))) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Invalid contact number format" 
+            });
+        }
+
         const existingHotel = await Hotel.findOne({ owner });
 
         if (existingHotel) {

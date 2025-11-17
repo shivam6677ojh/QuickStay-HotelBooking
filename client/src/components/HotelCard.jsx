@@ -5,7 +5,9 @@ import { assets } from '../assets/assets'
 const HotelCard = ({ room, index }) => {
     const [imgLoaded, setImgLoaded] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const images = room.images || [];
+    const images = room?.images && Array.isArray(room.images) && room.images.length > 0 
+        ? room.images 
+        : ['https://via.placeholder.com/400x300?text=No+Image'];
 
     // Auto-slide images every 3 seconds
     useEffect(() => {
@@ -55,6 +57,7 @@ const HotelCard = ({ room, index }) => {
                                     : 'opacity-0 scale-110'
                             } group-hover/img:scale-110`}
                             onLoad={() => idx === 0 && setImgLoaded(true)}
+                            onError={(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'}
                         />
                     ))}
                     

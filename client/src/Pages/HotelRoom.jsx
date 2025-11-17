@@ -186,10 +186,11 @@ const HotelRoom = () => {
                         <div className='relative md:w-1/2 rounded-xl overflow-hidden group cursor-pointer shadow-lg hover:shadow-2xl transition-shadow duration-300'>
                             <img
                                 onClick={() => { navigate(`/rooms/${room._id}`); scrollTo(0, 0) }}
-                                src={room.images[0]}
+                                src={room.images?.[0] || 'https://via.placeholder.com/400x300?text=No+Image'}
                                 alt="hotel-img"
                                 title='View Room Details'
                                 className='max-h-65 w-full rounded-xl object-cover cursor-pointer transition-transform duration-700 group-hover:scale-110'
+                                onError={(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'}
                             />
                             {/* Overlay gradient */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -229,7 +230,7 @@ const HotelRoom = () => {
                             {/* room price per Night */}
                             <div className='flex items-center justify-between mt-auto pt-4 border-t border-gray-200 dark:border-gray-700'>
                                 <p className='flex flex-col'>
-                                    <span className='text-2xl font-bold text-gray-800 dark:text-gray-100'>${room.pricePerNignt || room.pricePerNight || 0}</span>
+                                    <span className='text-2xl font-bold text-gray-800 dark:text-gray-100'>${Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}</span>
                                     <span className='text-sm text-gray-500 dark:text-gray-400'>per night</span>
                                 </p>
                                 <button 

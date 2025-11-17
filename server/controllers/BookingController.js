@@ -32,6 +32,32 @@ export const checkAvailability = async (req, res) => {
     try {
         const { checkInDate, checkOutDate, room } = req.body;
         
+        // Validate required fields
+        if (!checkInDate || !checkOutDate || !room) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required fields: checkInDate, checkOutDate, and room are required"
+            });
+        }
+
+        // Validate dates
+        const checkIn = new Date(checkInDate);
+        const checkOut = new Date(checkOutDate);
+
+        if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid date format"
+            });
+        }
+
+        if (checkOut <= checkIn) {
+            return res.status(400).json({
+                success: false,
+                message: "Check-out date must be after check-in date"
+            });
+        }
+        
         const isAvailable = await checkRoomAvailability(checkInDate, checkOutDate, room);
 
         res.status(200).json({
@@ -39,7 +65,7 @@ export const checkAvailability = async (req, res) => {
             isAvailable
         });
     } catch (error) {
-        res.status(404).json({
+        res.status(500).json({
             success: false,
             message: error.message
         })
@@ -55,6 +81,41 @@ export const createBooking = async (req, res) => {
     try {
 
     const {  checkInDate, checkOutDate, room, guests } = req.body;
+
+    // Validate required fields
+    if (!checkInDate || !checkOutDate || !room) {
+        return res.status(400).json({
+            success: false,
+            message: "Missing required fields: checkInDate, checkOutDate, and room are required"
+        });
+    }
+
+    // Validate dates
+    const checkIn = new Date(checkInDate);
+    const checkOut = new Date(checkOutDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid date format"
+        });
+    }
+
+    if (checkIn < today) {
+        return res.status(400).json({
+            success: false,
+            message: "Check-in date cannot be in the past"
+        });
+    }
+
+    if (checkOut <= checkIn) {
+        return res.status(400).json({
+            success: false,
+            message: "Check-out date must be after check-in date"
+        });
+    }
 
     // req.user may be null when using Clerk-only auth; fall back to req.auth.userId
     const userId = req.user?._id || req.auth?.userId;
@@ -89,8 +150,6 @@ export const createBooking = async (req, res) => {
         // Ensure price is a number
         let pricePerNight = Number(roomData.pricePerNignt || roomData.pricePerNight || 0);
 
-        const checkIn = new Date(checkInDate);
-        const checkOut = new Date(checkOutDate);
         const timeDiff = Math.abs(checkOut.getTime() - checkIn.getTime());
         const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
         let totalPrice = pricePerNight * diffDays;
@@ -246,6 +305,14 @@ export const getOwnerBookings = async (req, res) => {
 export const cancelBooking = async (req, res) => {
     try {
         const { id } = req.params;
+        
+        // Validate ID
+        if (!id || id === 'undefined' || id === 'null') {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid booking ID"
+            });
+        }
         
         const booking = await Booking.findById(id)
             .populate('room')

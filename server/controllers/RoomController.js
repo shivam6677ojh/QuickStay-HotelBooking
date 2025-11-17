@@ -8,6 +8,39 @@ export const createRoom = async (req, res) => {
     try {
         const { roomType, pricePerNight, capacity, description, amenities } = req.body;
 
+        // Validate required fields
+        if (!roomType || !pricePerNight) {
+            return res.status(400).json({
+                success: false,
+                message: "Room type and price per night are required"
+            });
+        }
+
+        // Validate price is a positive number
+        const price = Number(pricePerNight);
+        if (isNaN(price) || price <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Price must be a positive number"
+            });
+        }
+
+        // Validate capacity if provided
+        if (capacity && (isNaN(Number(capacity)) || Number(capacity) <= 0)) {
+            return res.status(400).json({
+                success: false,
+                message: "Capacity must be a positive number"
+            });
+        }
+
+        // Check if images were uploaded
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "At least one room image is required"
+            });
+        }
+
         // For testing - use the first hotel since we don't have user-hotel mapping
         let hotel = await Hotel.findOne({});
 
@@ -54,7 +87,7 @@ export const createRoom = async (req, res) => {
             success: true,
             message: "Room created successfully",
             room: newRoom
-        });
+        })
 
     } catch (error) {
         console.error('❌ Error creating room:', error);
