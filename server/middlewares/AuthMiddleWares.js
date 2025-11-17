@@ -53,6 +53,7 @@ export const adminOnly = async (req, res, next) => {
     try {
         // Ensure protect middleware ran first
         if (!req.user) {
+            console.warn('⚠️  adminOnly: No user found in request');
             return res.status(401).json({ 
                 success: false, 
                 message: "Authentication required" 
@@ -62,20 +63,40 @@ export const adminOnly = async (req, res, next) => {
         // Prefer Clerk public metadata for role checks to avoid DB-sync race conditions.
         // This requires a server-side Clerk API key to be present in env vars.
         let userRole = req.user?.role;
+        let roleSource = 'database';
+        
         try {
             const auth = await req.auth();
             const clerkUserId = auth?.userId;
             if (clerkUserId) {
                 const clerkUser = await clerkClient.users.getUser(clerkUserId);
                 const clerkRole = clerkUser?.publicMetadata?.role || clerkUser?.unsafeMetadata?.role || null;
-                if (clerkRole) userRole = clerkRole;
+                if (clerkRole) {
+                    userRole = clerkRole;
+                    roleSource = 'clerk_metadata';
+                }
+                
+                console.log('🔐 Admin Access Check:', {
+                    userId: clerkUserId,
+                    email: clerkUser?.emailAddresses?.[0]?.emailAddress,
+                    role: userRole,
+                    roleSource: roleSource,
+                    publicMetadata: clerkUser?.publicMetadata,
+                    hasAccess: userRole === 'admin' || userRole === 'owner'
+                });
             }
         } catch (clerkErr) {
-            console.warn('Warning: failed to fetch Clerk user for role check (check CLERK API key):', clerkErr.message || clerkErr);
+            console.warn('⚠️  Failed to fetch Clerk user for role check:', clerkErr.message || clerkErr);
+            console.warn('⚠️  Ensure CLERK_SECRET_KEY is set in environment variables');
             // keep DB role as fallback
         }
 
         if (userRole !== 'admin' && userRole !== 'owner') {
+            console.warn('❌ Admin access denied:', {
+                userId: req.user._id,
+                role: userRole,
+                requiredRole: 'admin or owner'
+            });
             return res.status(403).json({ 
                 success: false, 
                 message: "Access denied. Admin privileges required." 

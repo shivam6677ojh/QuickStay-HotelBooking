@@ -65,6 +65,12 @@ app.use(async (req, res, next) => {
 
 app.use(clerkMiddleware());
 
+// Request logging middleware
+app.use((req, res, next) => {
+    console.log(`📥 ${req.method} ${req.path}`);
+    next();
+});
+
 // Api to listen cleark webhooks
 app.use("/api/clerk", clearWebhook);
 app.use("/api/user", userRouter);
@@ -81,10 +87,32 @@ app.get("/", (req, res) => {
 // For Vercel serverless deployment
 export default app;
 
-// For local development
-if (process.env.NODE_ENV !== 'production') {
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`)
-    });
+// For local development - Always start server if not imported as module
+if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
+    const PORT = process.env.PORT || 5000;
+    
+    // Initialize connections and start server
+    ensureDBConnection()
+        .then(() => {
+            app.listen(PORT, () => {
+                console.log(`🚀 Server is running on port ${PORT}`);
+                console.log(`📍 API endpoint: http://localhost:${PORT}`);
+                console.log(`\n📋 Available Admin Routes:`);
+                console.log(`   POST   /api/admin/promote`);
+                console.log(`   GET    /api/admin/stats`);
+                console.log(`   GET    /api/admin/bookings`);
+                console.log(`   GET    /api/admin/users`);
+                console.log(`   GET    /api/admin/hotels`);
+                console.log(`   GET    /api/admin/rooms`);
+                console.log(`   DELETE /api/admin/bookings/:id`);
+                console.log(`   PATCH  /api/admin/bookings/:id/status`);
+                console.log(`   DELETE /api/admin/hotels/:id`);
+                console.log(`   DELETE /api/admin/rooms/:id`);
+                console.log(`   PATCH  /api/admin/users/:id/role\n`);
+            });
+        })
+        .catch((error) => {
+            console.error('❌ Failed to start server:', error);
+            process.exit(1);
+        });
 } 
