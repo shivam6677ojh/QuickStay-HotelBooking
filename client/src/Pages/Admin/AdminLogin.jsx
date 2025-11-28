@@ -9,18 +9,31 @@ const AdminLogin = () => {
   const [checking, setChecking] = useState(false);
 
   React.useEffect(() => {
-    if (isSignedIn && user) {
-      setChecking(true);
-      // Check if user is admin
-      const userRole = user?.publicMetadata?.role || user?.unsafeMetadata?.role;
-      
-      if (userRole === 'admin' || userRole === 'owner') {
-        // Redirect to admin dashboard
-        navigate('/admin/dashboard');
-      } else {
-        setChecking(false);
+    const verifyAdminAccess = async () => {
+      if (isSignedIn && user) {
+        setChecking(true);
+        
+        // Check role from Clerk metadata (most reliable source)
+        const userRole = user?.publicMetadata?.role || user?.unsafeMetadata?.role;
+        
+        console.log('🔐 Admin Login - Verifying access for:', {
+          userId: user.id,
+          email: user.primaryEmailAddress?.emailAddress,
+          role: userRole,
+          publicMetadata: user.publicMetadata,
+        });
+        
+        if (userRole === 'admin' || userRole === 'owner') {
+          console.log('✅ Admin access granted - redirecting to dashboard');
+          navigate('/admin/dashboard');
+        } else {
+          console.warn('❌ Admin access denied - user role:', userRole || 'none');
+          setChecking(false);
+        }
       }
-    }
+    };
+    
+    verifyAdminAccess();
   }, [isSignedIn, user, navigate]);
 
   const handleSignIn = () => {
@@ -74,8 +87,16 @@ const AdminLogin = () => {
                 <p className="text-indigo-200 mb-4">
                   You are signed in as <span className="font-medium text-white">{user?.primaryEmailAddress?.emailAddress}</span>
                 </p>
+                <div className="bg-red-500/20 border border-red-400/30 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-red-200 mb-2">
+                    <strong>Current Role:</strong> {user?.publicMetadata?.role || user?.unsafeMetadata?.role || 'user (standard)'}
+                  </p>
+                  <p className="text-sm text-red-200">
+                    <strong>Required Role:</strong> admin or owner
+                  </p>
+                </div>
                 <p className="text-sm text-indigo-300 mb-6">
-                  This account does not have admin privileges. Please contact a system administrator to grant admin access.
+                  This account does not have admin privileges. Please contact a system administrator to grant admin access to your Clerk account.
                 </p>
               </div>
               

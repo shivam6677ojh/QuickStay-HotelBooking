@@ -213,7 +213,7 @@ const HotelRoom = () => {
                                 <span className='text-sm'>{room.hotel?.address || 'Address'}</span>
                             </div>
                             {/* room Type */}
-                            <div className='mt-2 px-4 py-1.5 rounded-full bg-brand/10 dark:bg-blue-900/30 text-brand dark:text-blue-400 inline-block w-fit text-sm font-semibold shadow-sm'>
+                            <div className='chip-pill mt-2 text-brand dark:text-blue-300 shadow-sm'>
                                 {room.roomType}
                             </div>
                             {/* room Aminity */}

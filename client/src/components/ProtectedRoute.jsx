@@ -29,11 +29,27 @@ const ProtectedRoute = ({ children, requiredRole = 'admin' }) => {
     // Make sure to set public metadata in Clerk for admin users before deployment.
 
     // Check if user has the required role
-    // In Clerk, you can set publicMetadata with role information
+    // Priority: publicMetadata (set by admin) > unsafeMetadata (set by user)
     const userRole = user?.publicMetadata?.role || user?.unsafeMetadata?.role;
     
-    if (userRole !== requiredRole && userRole !== 'owner') {
-        toast.error('Access denied. Admin privileges required.');
+    console.log('🔒 Protected Route Check:', {
+        path: location.pathname,
+        userId: user?.id,
+        email: user?.primaryEmailAddress?.emailAddress,
+        userRole: userRole,
+        requiredRole: requiredRole,
+        hasAccess: userRole === requiredRole || userRole === 'owner' || userRole === 'admin'
+    });
+    
+    // Allow access if user has the exact required role, or is owner/admin
+    const hasAccess = userRole === requiredRole || userRole === 'owner' || userRole === 'admin';
+    
+    if (!hasAccess) {
+        console.warn('❌ Access denied: User role mismatch', {
+            userRole: userRole || 'none',
+            requiredRole: requiredRole
+        });
+        toast.error(`Access denied. ${requiredRole.charAt(0).toUpperCase() + requiredRole.slice(1)} privileges required. Your role: ${userRole || 'user'}`);
         return <Navigate to="/" replace />;
     }
 

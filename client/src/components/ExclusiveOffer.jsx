@@ -6,7 +6,7 @@ import useInView from '../hooks/useInView'
 const ExclusiveOffer = () => {
     const { ref, inView } = useInView({ threshold: 0.2 });
     return (
-        <div ref={ref} className='relative flex flex-col items-center px-6 md:px-16 lg:px-24 xl-px-32 pt-16 md:pt-20 pb-20 overflow-hidden'>
+        <div ref={ref} className='section-shell relative flex flex-col items-center px-6 md:px-16 lg:px-24 xl-px-32 pt-16 md:pt-20 pb-20 overflow-hidden'>
             {/* Gradient Background */}
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-violet-50 to-pink-50 dark:from-gray-900 dark:via-indigo-900/20 dark:to-violet-900/20"></div>
             

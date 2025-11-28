@@ -68,14 +68,14 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-    <div>
+    <div className="app-shell">
       <AuthSetup />
       <SessionTimeout />
       {!isOwnerPath && !isAdminPath && <Navbar />}
       {!isAdminPath && <ThemeToggle />}
   {/* HotelReg intentionally disabled during development; enable when needed */}
 
-      <div className="min-h-[70vh]">
+      <main className="app-main min-h-[70vh]">
         <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/rooms" element={<HotelRoom />} />
@@ -112,7 +112,7 @@ const App = () => {
             </Route>
 
           </Routes>
-        </div>
+        </main>
 
         {!isOwnerPath && !isAdminPath && <Footer />}
       </div>

@@ -178,7 +178,7 @@ const NewsLetter = () => {
     };
 
     return (
-        <div className='relative flex justify-center items-center p-4 overflow-hidden'>
+        <div className='section-shell relative flex justify-center items-center p-4 overflow-hidden'>
             {/* Gradient Background */}
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 via-violet-100 to-pink-100 dark:from-gray-900 dark:via-indigo-900/30 dark:to-violet-900/30"></div>
             

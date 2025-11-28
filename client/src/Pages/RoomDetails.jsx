@@ -282,7 +282,7 @@ const RoomDetails = () => {
 
             {/*  checkIn checkOut Form */}
 
-            <form onSubmit={handleCheckAvailability} className='flex flex-col md:flex-row items-start md:items-center justify-between bg-white dark:bg-gray-900 shadow-[0px_0px_20px_rgba(0,0,0,0.25)] dark:shadow-[0px_0px_20px_rgba(0,0,0,0.5)] p-6 rounded-xl mx-auto mt-16 max-w-6xl border dark:border-gray-800'>
+            <form id='booking-form' onSubmit={handleCheckAvailability} className='flex flex-col md:flex-row items-start md:items-center justify-between bg-white dark:bg-gray-900 shadow-[0px_0px_20px_rgba(0,0,0,0.25)] dark:shadow-[0px_0px_20px_rgba(0,0,0,0.5)] p-6 rounded-xl mx-auto mt-16 max-w-6xl border dark:border-gray-800'>
 
                 <div className='flex flex-col flex-wrap md:flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500 dark:text-gray-400'>
 
@@ -347,26 +347,130 @@ const RoomDetails = () => {
 
             {/* Availability Info */}
             {availabilityInfo && (
-                <div className={`mt-6 p-6 rounded-xl max-w-6xl mx-auto ${availabilityInfo.available ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+                <div
+                    className={`mt-8 max-w-6xl mx-auto rounded-2xl border p-6 md:p-8 shadow-xl backdrop-blur-sm transition-all ${
+                        availabilityInfo.available
+                            ? 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-emerald-900/10 dark:to-green-900/10 border-green-200 dark:border-emerald-800'
+                            : 'bg-gradient-to-br from-red-50 to-rose-50 dark:from-rose-900/10 dark:to-red-900/10 border-rose-200 dark:border-rose-800'
+                    }`}
+                >
                     {availabilityInfo.available ? (
-                        <div>
-                            <h3 className='text-xl font-semibold text-green-800 mb-3'>Room Available! 🎉</h3>
-                            <div className='space-y-2 text-gray-700'>
-                                <p><span className='font-semibold'>Nights:</span> {availabilityInfo.nights}</p>
-                                <p><span className='font-semibold'>Price per night:</span> ${room.pricePerNignt || room.pricePerNight}</p>
-                                <p className='text-2xl font-bold text-green-700'>Total: ${availabilityInfo.totalPrice}</p>
+                        <div className='space-y-6'>
+                            <div className='flex items-center justify-between gap-4'>
+                                <div className='flex items-center gap-3'>
+                                    <span className='inline-flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-green-700 dark:bg-emerald-900/40 dark:text-emerald-300'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-2.452a.75.75 0 1 0-1.22-.896l-3.236 4.41-1.69-1.69a.75.75 0 1 0-1.06 1.061l2.25 2.25a.75.75 0 0 0 1.137-.094l3.519-5.041Z" clipRule="evenodd"/></svg>
+                                    </span>
+                                    <div>
+                                        <h3 className='text-xl md:text-2xl font-semibold text-green-800 dark:text-emerald-300'>Good news! This room is available</h3>
+                                        <p className='text-sm text-green-700/80 dark:text-emerald-400/80'>Secure it now — no prepayment needed</p>
+                                    </div>
+                                </div>
+                                <div className='hidden md:block px-3 py-1 rounded-full text-xs font-semibold bg-green-600 text-white'>Available</div>
                             </div>
-                            <button
-                                onClick={handleBookNow}
-                                className='mt-4 px-8 py-3 btn-brand text-white rounded-lg font-semibold hover:opacity-90 transition-all cursor-pointer'
-                            >
-                                Book Now
-                            </button>
+
+                            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                                <div className='rounded-xl border border-green-200 dark:border-emerald-800 bg-white/70 dark:bg-emerald-900/20 p-4 flex items-center gap-3'>
+                                    <span className='h-9 w-9 flex items-center justify-center rounded-lg bg-green-100 text-green-700 dark:bg-emerald-800/50 dark:text-emerald-200'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5A2.25 2.25 0 0 1 5.25 5.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>
+                                    </span>
+                                    <div>
+                                        <p className='text-xs text-gray-500'>Nights</p>
+                                        <p className='text-lg font-semibold text-gray-900 dark:text-gray-100'>{availabilityInfo.nights}</p>
+                                    </div>
+                                </div>
+                                <div className='rounded-xl border border-green-200 dark:border-emerald-800 bg-white/70 dark:bg-emerald-900/20 p-4 flex items-center gap-3'>
+                                    <span className='h-9 w-9 flex items-center justify-center rounded-lg bg-green-100 text-green-700 dark:bg-emerald-800/50 dark:text-emerald-200'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M11.25 1.5a.75.75 0 0 1 .75.75V3h1.5a.75.75 0 0 1 0 1.5H12v1.5h1.5a.75.75 0 0 1 0 1.5H12V9h1.5a.75.75 0 0 1 0 1.5H12v1.5h1.5a.75.75 0 0 1 0 1.5H12V15h1.5a.75.75 0 0 1 0 1.5H12v1.25a.75.75 0 0 1-1.5 0V16.5H9a.75.75 0 0 1 0-1.5h1.5V13.5H9a.75.75 0 0 1 0-1.5h1.5V10.5H9a.75.75 0 0 1 0-1.5h1.5V7.5H9A.75.75 0 0 1 9 6h1.5V4.5H9A.75.75 0 0 1 9 3h1.5V2.25a.75.75 0 0 1 .75-.75Z"/></svg>
+                                    </span>
+                                    <div>
+                                        <p className='text-xs text-gray-500'>Price/Night</p>
+                                        <p className='text-lg font-semibold text-gray-900 dark:text-gray-100'>${Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}</p>
+                                    </div>
+                                </div>
+                                <div className='rounded-xl border border-green-200 dark:border-emerald-800 bg-white/70 dark:bg-emerald-900/20 p-4 flex items-center gap-3'>
+                                    <span className='h-9 w-9 flex items-center justify-center rounded-lg bg-green-100 text-green-700 dark:bg-emerald-800/50 dark:text-emerald-200'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-6-6h12"/></svg>
+                                    </span>
+                                    <div>
+                                        <p className='text-xs text-gray-500'>Subtotal</p>
+                                        <p className='text-lg font-semibold text-gray-900 dark:text-gray-100'>${Number(availabilityInfo.totalPrice || 0).toFixed(2)}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className='rounded-xl bg-white/80 dark:bg-gray-900/50 border border-green-200 dark:border-emerald-800 p-5'>
+                                <div className='flex items-center justify-between text-sm'>
+                                    <span className='text-gray-600 dark:text-gray-300'>Breakdown</span>
+                                </div>
+                                <div className='mt-3 space-y-2 text-gray-700 dark:text-gray-200'>
+                                    <div className='flex items-center justify-between'>
+                                        <span>{availabilityInfo.nights} × ${Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}</span>
+                                        <span>${Number(availabilityInfo.totalPrice || 0).toFixed(2)}</span>
+                                    </div>
+                                    <div className='flex items-center justify-between text-sm text-gray-500'>
+                                        <span>Fees</span>
+                                        <span>Included</span>
+                                    </div>
+                                </div>
+                                <div className='mt-4 pt-3 border-t border-green-200/70 dark:border-emerald-800/70 flex items-center justify-between'>
+                                    <span className='text-lg font-semibold'>Total due at hotel</span>
+                                    <span className='text-2xl font-bold text-green-700 dark:text-emerald-300'>${Number(availabilityInfo.totalPrice || 0).toFixed(2)}</span>
+                                </div>
+                                <p className='mt-2 text-xs text-green-800/80 dark:text-emerald-400/80'>No prepayment needed • Free cancellation until check‑in</p>
+                            </div>
+
+                            <div className='flex flex-col md:flex-row gap-3'>
+                                <button
+                                    onClick={handleBookNow}
+                                    className='flex-1 md:flex-none md:min-w-[200px] inline-flex items-center justify-center gap-2 px-8 py-3 btn-brand text-white rounded-lg font-semibold hover:opacity-90 transition-all cursor-pointer'
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121 0 2.1-.772 2.326-1.87l1.35-6.48A1.125 1.125 0 0 0 20.297 3H5.106m2.394 11.25L5.106 3m2.394 11.25L9 20.25m3-6.75v6.75"/></svg>
+                                    Book Now
+                                </button>
+                                <button
+                                    onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                                    className='flex-1 md:flex-none md:min-w-[200px] inline-flex items-center justify-center gap-2 px-8 py-3 rounded-lg font-semibold border border-green-300 text-green-700 bg-white hover:bg-green-50 dark:bg-transparent dark:text-emerald-300 dark:border-emerald-700 dark:hover:bg-emerald-900/20 transition-all cursor-pointer'
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75h19.5m-16.5 3h13.5M6 13.5h12"/></svg>
+                                    Change dates
+                                </button>
+                            </div>
                         </div>
                     ) : (
-                        <div>
-                            <h3 className='text-xl font-semibold text-red-800'>Not Available</h3>
-                            <p className='text-gray-700 mt-2'>This room is not available for your selected dates. Please try different dates.</p>
+                        <div className='space-y-5'>
+                            <div className='flex items-center gap-3'>
+                                <span className='inline-flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm.75 5.25a.75.75 0 1 0-1.5 0v5.25a.75.75 0 0 0 1.5 0V7.5Zm0 8.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z" clipRule="evenodd"/></svg>
+                                </span>
+                                <div>
+                                    <h3 className='text-xl md:text-2xl font-semibold text-rose-800 dark:text-rose-300'>Not available for these dates</h3>
+                                    <p className='text-sm text-rose-700/80 dark:text-rose-400/80'>Try adjusting your dates or explore similar rooms</p>
+                                </div>
+                            </div>
+
+                            <div className='flex flex-wrap gap-2'>
+                                <span className='px-3 py-1 text-xs rounded-full bg-white/80 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300'>Flexible dates</span>
+                                <span className='px-3 py-1 text-xs rounded-full bg-white/80 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300'>Try fewer nights</span>
+                                <span className='px-3 py-1 text-xs rounded-full bg-white/80 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300'>Reduce guests</span>
+                            </div>
+
+                            <div className='flex flex-col md:flex-row gap-3'>
+                                <button
+                                    onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                                    className='flex-1 md:flex-none md:min-w-[200px] inline-flex items-center justify-center gap-2 px-8 py-3 rounded-lg font-semibold border border-rose-300 text-rose-700 bg-white hover:bg-rose-50 dark:bg-transparent dark:text-rose-300 dark:border-rose-700 dark:hover:bg-rose-900/20 transition-all cursor-pointer'
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75h19.5m-16.5 3h13.5M6 13.5h12"/></svg>
+                                    Change dates
+                                </button>
+                                <Link
+                                    to='/rooms'
+                                    className='flex-1 md:flex-none md:min-w-[200px] inline-flex items-center justify-center gap-2 px-8 py-3 rounded-lg font-semibold bg-rose-600 text-white hover:bg-rose-700 transition-all cursor-pointer'
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-9A2.25 2.25 0 0 0 2.25 5.25v13.5A2.25 2.25 0 0 0 4.5 21h9a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/></svg>
+                                    See similar rooms
+                                </Link>
+                            </div>
                         </div>
                     )}
                 </div>

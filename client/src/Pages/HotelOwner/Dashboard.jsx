@@ -42,7 +42,8 @@ const Dashboard = () => {
       
       // Fetch owner's rooms
       const roomsResponse = await roomService.getOwnerRooms()
-      console.log('Rooms response:', roomsResponse)
+      console.log('Owner Rooms response:', roomsResponse)
+      console.log('Total rooms:', roomsResponse.rooms?.length || 0)
       const rooms = roomsResponse.rooms || []
       
       // Fetch owner's bookings

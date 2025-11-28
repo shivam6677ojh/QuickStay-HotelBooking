@@ -28,7 +28,7 @@ const FeaturedDestination = () => {
     }, []);
 
     return (
-        <div ref={ref} className='relative flex flex-col items-center px-6 md:px-16 lg:px-24 py-16 transition-colors duration-300 overflow-hidden'>
+        <div ref={ref} className='section-shell relative flex flex-col items-center px-6 md:px-16 lg:px-24 py-16 transition-colors duration-300 overflow-hidden'>
             {/* Gradient Background */}
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-violet-50 to-pink-50 dark:from-gray-900 dark:via-indigo-900/20 dark:to-violet-900/20"></div>
             

@@ -83,7 +83,7 @@ const Navbar = () => {
 
     return (
 
-        <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${isScrolled ? "bg-white/90 dark:bg-gray-900/90 shadow-lg shadow-indigo-500/10 text-gray-900 dark:text-gray-100 backdrop-blur-lg py-3 md:py-4 border-b border-indigo-500/10" : "py-4 md:py-6"}`}>
+        <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 text-gray-900 dark:text-gray-100 ${isScrolled ? "bg-white/95 dark:bg-gray-900/90 shadow-lg shadow-indigo-500/10 backdrop-blur-lg py-3 md:py-4 border-b border-indigo-500/10" : "bg-white/70 dark:bg-gray-900/60 shadow-md shadow-indigo-500/5 border border-white/60 dark:border-white/10 backdrop-blur-xl py-4 md:py-6"}`}>
 
             {/* Logo */}
             <Link to='/' className="relative group">
