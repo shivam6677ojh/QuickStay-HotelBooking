@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/client';
+import { toast } from 'react-toastify';
 
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [detailsBooking, setDetailsBooking] = useState(null);
 
   useEffect(() => {
     fetchBookings();
@@ -28,9 +30,9 @@ const AdminBookings = () => {
     try {
       await apiClient.delete(`/admin/bookings/${id}`);
       setBookings(bookings.filter((b) => b._id !== id));
-      alert('Booking cancelled successfully');
+      toast.success('Booking cancelled successfully');
     } catch (error) {
-      alert('Failed to cancel booking');
+      toast.error(error.response?.data?.message || 'Failed to cancel booking');
       console.error(error);
     }
   };
@@ -39,14 +41,22 @@ const AdminBookings = () => {
     try {
       await apiClient.patch(`/admin/bookings/${id}/status`, { status: newStatus });
       setBookings(bookings.map((b) => (b._id === id ? { ...b, status: newStatus } : b)));
-      alert('Status updated successfully');
+      toast.success('Status updated successfully');
     } catch (error) {
-      alert('Failed to update status');
+      toast.error(error.response?.data?.message || 'Failed to update status');
       console.error(error);
     }
   };
 
   const filteredBookings = filter === 'all' ? bookings : bookings.filter((b) => b.status === filter);
+  const openDetails = (booking) => setDetailsBooking(booking);
+  const closeDetails = () => setDetailsBooking(null);
+
+  const getImageUrl = (booking) => {
+    if (booking.room?.images?.length) return booking.room.images[0];
+    if (booking.hotel?.image) return booking.hotel.image;
+    return 'https://via.placeholder.com/400x300?text=No+Image';
+  };
 
   if (loading) {
     return (
@@ -107,12 +117,11 @@ const AdminBookings = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Check Out
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guests</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -135,7 +144,7 @@ const AdminBookings = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {booking.room?.title || 'N/A'}
+                      {booking.room?.roomType || booking.room?.title || 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {booking.hotel?.name || 'N/A'}
@@ -145,6 +154,18 @@ const AdminBookings = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {booking.checkOutDate ? new Date(booking.checkOutDate).toLocaleDateString() : 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {booking.guests || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                      ${Number(booking.totalPrice || 0).toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div className="font-medium text-gray-900">{booking.paymentMethod || 'Pay At Hotel'}</div>
+                      <div className={`text-xs ${booking.isPaid ? 'text-green-600' : 'text-amber-600'}`}>
+                        {booking.isPaid ? 'Paid' : 'Pending'}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <select
@@ -158,7 +179,13 @@ const AdminBookings = () => {
                         <option value="completed">Completed</option>
                       </select>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm flex flex-col gap-2">
+                      <button
+                        onClick={() => openDetails(booking)}
+                        className="text-indigo-600 hover:text-indigo-900 font-medium"
+                      >
+                        View
+                      </button>
                       <button
                         onClick={() => handleCancelBooking(booking._id)}
                         className="text-red-600 hover:text-red-900 font-medium"
@@ -173,6 +200,88 @@ const AdminBookings = () => {
           </table>
         </div>
       </div>
+
+      {detailsBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b">
+              <div>
+                <p className="text-sm text-gray-500">Booking #{detailsBooking._id.slice(-8)}</p>
+                <h2 className="text-2xl font-semibold text-gray-900">{detailsBooking.hotel?.name || 'Hotel'}</h2>
+              </div>
+              <button onClick={closeDetails} className="text-gray-500 hover:text-gray-800 text-2xl leading-none">×</button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
+              <div className="space-y-4">
+                <img
+                  src={getImageUrl(detailsBooking)}
+                  alt={detailsBooking.room?.roomType || 'Room image'}
+                  className="w-full h-64 object-cover rounded-xl"
+                />
+                <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-gray-400">Room Type</p>
+                    <p className="text-base font-semibold text-gray-900">{detailsBooking.room?.roomType || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-gray-400">Guests</p>
+                    <p className="text-base font-semibold text-gray-900">{detailsBooking.guests || '-'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-gray-400">Check-in</p>
+                    <p>{detailsBooking.checkInDate ? new Date(detailsBooking.checkInDate).toLocaleString() : 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-gray-400">Check-out</p>
+                    <p>{detailsBooking.checkOutDate ? new Date(detailsBooking.checkOutDate).toLocaleString() : 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <p className="text-xs uppercase tracking-wide text-gray-400 mb-2">Guest</p>
+                  <p className="text-lg font-semibold text-gray-900">{detailsBooking.user?.name || 'N/A'}</p>
+                  <p className="text-sm text-gray-500">{detailsBooking.user?.email || '—'}</p>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Payment Method</span>
+                    <span className="font-semibold text-gray-900">{detailsBooking.paymentMethod || 'Pay At Hotel'}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Payment Status</span>
+                    <span className={`font-semibold ${detailsBooking.isPaid ? 'text-green-600' : 'text-amber-600'}`}>
+                      {detailsBooking.isPaid ? 'Paid' : 'Pending'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-lg font-bold text-gray-900 border-t pt-3">
+                    <span>Total</span>
+                    <span>${Number(detailsBooking.totalPrice || 0).toFixed(2)}</span>
+                  </div>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <p className="text-xs uppercase tracking-wide text-gray-400 mb-2">Status</p>
+                  <select
+                    value={detailsBooking.status || 'pending'}
+                    onChange={(e) => {
+                      handleUpdateStatus(detailsBooking._id, e.target.value);
+                      setDetailsBooking({ ...detailsBooking, status: e.target.value });
+                    }}
+                    className="w-full rounded-lg border-gray-200"
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

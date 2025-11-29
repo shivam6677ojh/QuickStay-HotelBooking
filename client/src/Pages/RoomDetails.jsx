@@ -23,6 +23,7 @@ const RoomDetails = () => {
     const [availabilityInfo, setAvailabilityInfo] = useState(null)
     const [showBookingModal, setShowBookingModal] = useState(false)
     const [bookingLoading, setBookingLoading] = useState(false)
+    const [stripeRedirecting, setStripeRedirecting] = useState(false)
 
 
     useEffect(() => {
@@ -130,9 +131,26 @@ const RoomDetails = () => {
         setShowBookingModal(true)
     }
 
-    const confirmBooking = async () => {
+    const redirectToStripe = async (bookingId) => {
+        if (!bookingId) {
+            throw new Error('Missing booking id for Stripe checkout')
+        }
+
+        const sessionResponse = await bookingService.initiateStripeCheckout(bookingId)
+        if (!sessionResponse?.url) {
+            throw new Error('Stripe session could not be created')
+        }
+        toast.info('Redirecting you to our secure payment partner...')
+        window.location.href = sessionResponse.url
+    }
+
+    const confirmBooking = async (paymentType = 'hotel') => {
         try {
-            setBookingLoading(true)
+            if (paymentType === 'stripe') {
+                setStripeRedirecting(true)
+            } else {
+                setBookingLoading(true)
+            }
             
             const bookingPayload = {
                 room: id,
@@ -141,7 +159,7 @@ const RoomDetails = () => {
                 checkOutDate: bookingData.checkOut,
                 guests: bookingData.guests,
                 totalPrice: calculateTotalPrice(),
-                paymentMethod: 'Pay At Hotel'
+                paymentMethod: paymentType === 'stripe' ? 'Stripe' : 'Pay At Hotel'
             }
 
             console.log('Creating booking with payload:', bookingPayload)
@@ -149,20 +167,26 @@ const RoomDetails = () => {
             console.log('Booking response:', response)
             
             if (response.success) {
-                toast.success('Booking confirmed! Redirecting to your bookings...')
-                setShowBookingModal(false)
-                
-                // Wait a bit longer to ensure the booking is saved
-                setTimeout(() => {
-                    navigate('/my-bookings')
-                }, 1500)
+                if (paymentType === 'stripe') {
+                    await redirectToStripe(response.booking?._id)
+                } else {
+                    toast.success('Booking confirmed! Redirecting to your bookings...')
+                    setShowBookingModal(false)
+                    setTimeout(() => {
+                        navigate('/my-bookings')
+                    }, 1500)
+                }
             }
         } catch (error) {
             console.error('Booking error:', error)
-            const errorMessage = error.response?.data?.message || 'Failed to create booking'
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to create booking'
             toast.error(errorMessage)
         } finally {
-            setBookingLoading(false)
+            if (paymentType === 'stripe') {
+                setStripeRedirecting(false)
+            } else {
+                setBookingLoading(false)
+            }
         }
     }
 
@@ -578,25 +602,33 @@ const RoomDetails = () => {
                             </div>
                             <div className='bg-blue-50 p-3 rounded-lg'>
                                 <p className='text-sm text-blue-800'>
-                                    💳 Payment: Pay at Hotel
+                                    💳 Payment: Choose to pay now via Stripe for instant confirmation or settle at the hotel reception.
                                 </p>
                             </div>
                         </div>
 
-                        <div className='flex gap-3'>
+                        <div className='flex flex-col gap-3'>
+                            <div className='flex gap-3'>
+                                <button
+                                    onClick={() => setShowBookingModal(false)}
+                                    className='flex-1 px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-all'
+                                >
+                                    Maybe Later
+                                </button>
+                                <button
+                                    onClick={() => confirmBooking('hotel')}
+                                    disabled={bookingLoading}
+                                    className='flex-1 px-6 py-3 rounded-lg font-semibold bg-gray-900 text-white hover:bg-gray-800 transition-all disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed'
+                                >
+                                    {bookingLoading ? 'Booking...' : 'Confirm & Pay at Hotel'}
+                                </button>
+                            </div>
                             <button
-                                onClick={() => setShowBookingModal(false)}
-                                disabled={loading}
-                                className='flex-1 px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-all disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed'
+                                onClick={() => confirmBooking('stripe')}
+                                disabled={stripeRedirecting}
+                                className='w-full inline-flex items-center justify-center gap-2 px-6 py-3 btn-brand text-white rounded-lg font-semibold hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed'
                             >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={confirmBooking}
-                                disabled={loading}
-                                className='flex-1 px-6 py-3 btn-brand text-white rounded-lg font-semibold hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed'
-                            >
-                                {bookingLoading ? 'Processing...' : 'Confirm Booking'}
+                                {stripeRedirecting ? 'Redirecting to Stripe...' : 'Pay Now with Card'}
                             </button>
                         </div>
                     </div>

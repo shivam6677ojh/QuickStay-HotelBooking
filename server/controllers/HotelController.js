@@ -4,8 +4,9 @@ import User from "../models/UserModel.js";
 // Create hotel
 export const createHotel = async (req, res) => {
     try {
-        const { name, address, contact, city } = req.body;
-        const owner = req.auth.userId;
+        const { name, address, contact, city, ownerId, image } = req.body;
+        const isAdmin = req.user?.role === 'admin';
+        const owner = isAdmin && ownerId ? ownerId : req.auth.userId;
 
         // Validate required fields
         if (!name || !address || !contact || !city) {
@@ -15,21 +16,34 @@ export const createHotel = async (req, res) => {
             });
         }
 
-        // Validate contact format (basic validation)
-        if (contact && !/^\+?[1-9]\d{1,14}$/.test(contact.replace(/[\s-]/g, ''))) {
+        const sanitizedContact = contact?.trim();
+        const contactPattern = /^[+]?[\d\s\-()]{7,20}$/;
+        if (sanitizedContact && !contactPattern.test(sanitizedContact)) {
             return res.status(400).json({ 
                 success: false, 
                 message: "Invalid contact number format" 
             });
         }
 
-        const existingHotel = await Hotel.findOne({ owner });
+        // Ensure selected owner exists when admin assigns a hotel
+        if (owner !== req.auth.userId) {
+            const ownerUser = await User.findById(owner);
+            if (!ownerUser) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Selected owner not found"
+                });
+            }
+        }
 
-        if (existingHotel) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Hotel already registered" 
-            });
+        if (!isAdmin) {
+            const existingHotel = await Hotel.findOne({ owner });
+            if (existingHotel) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: "Hotel already registered" 
+                });
+            }
         }
 
         const newHotel = await Hotel.create({
@@ -37,7 +51,8 @@ export const createHotel = async (req, res) => {
             address,
             contact,
             city,
-            owner
+            owner,
+            image: image || ''
         });
 
         return res.status(201).json({ 
@@ -87,7 +102,8 @@ export const getOwnerHotel = async (req, res) => {
 export const updateHotel = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, address, contact, city } = req.body;
+        const { name, address, contact, city, ownerId, image } = req.body;
+        const isAdmin = req.user?.role === 'admin';
         
         const hotel = await Hotel.findById(id);
         
@@ -98,18 +114,40 @@ export const updateHotel = async (req, res) => {
             });
         }
         
-        // Check if user owns this hotel
-        if (hotel.owner.toString() !== req.auth.userId) {
+        // Allow admins to edit any hotel, but restrict regular owners to their own hotel
+        if (!isAdmin && hotel.owner.toString() !== req.auth.userId) {
             return res.status(403).json({ 
                 success: false, 
                 message: "Not authorized to update this hotel" 
             });
         }
         
+        if (ownerId && isAdmin) {
+            const ownerUser = await User.findById(ownerId);
+            if (!ownerUser) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Selected owner not found"
+                });
+            }
+            hotel.owner = ownerId;
+        }
+        
         if (name) hotel.name = name;
         if (address) hotel.address = address;
-        if (contact) hotel.contact = contact;
+        if (contact) {
+            const sanitizedContact = contact.trim();
+            const contactPattern = /^[+]?[\d\s\-()]{7,20}$/;
+            if (!contactPattern.test(sanitizedContact)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid contact number format"
+                });
+            }
+            hotel.contact = sanitizedContact;
+        }
         if (city) hotel.city = city;
+        if (typeof image === 'string') hotel.image = image;
         
         await hotel.save();
         

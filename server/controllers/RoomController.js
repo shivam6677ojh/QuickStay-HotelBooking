@@ -6,7 +6,7 @@ import Room from "../models/RoomModel.js";
 // Api to create new room for hotel
 export const createRoom = async (req, res) => { 
     try {
-        const { roomType, pricePerNight, capacity, description, amenities } = req.body;
+        const { roomType, pricePerNight, capacity, description, amenities, hotelId } = req.body;
 
         // Validate required fields
         if (!roomType || !pricePerNight) {
@@ -41,8 +41,16 @@ export const createRoom = async (req, res) => {
             });
         }
 
-        // For testing - use the first hotel since we don't have user-hotel mapping
-        let hotel = await Hotel.findOne({});
+        // Figure out which hotel this room belongs to
+        let hotel;
+        if (hotelId) {
+            hotel = await Hotel.findById(hotelId);
+        }
+        
+        if (!hotel) {
+            // Fallback - use the first hotel (legacy behaviour)
+            hotel = await Hotel.findOne({});
+        }
 
         if (!hotel) {
             return res.status(404).json({

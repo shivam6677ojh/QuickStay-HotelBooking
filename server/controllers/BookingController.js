@@ -5,6 +5,11 @@ import Booking from "../models/BookingModel.js"
 import Room from "../models/RoomModel.js";
 import Hotel from "../models/HotelModel.js";
 import transporter from "../configs/Nodemailer.js";
+import Stripe from "stripe";
+
+const stripeClient = process.env.STRIPE_SECRET_KEY
+    ? new Stripe(process.env.STRIPE_SECRET_KEY)
+    : null;
 
 // Helper function to check availability
 const checkRoomAvailability = async (checkInDate, checkOutDate, room) => {
@@ -80,7 +85,7 @@ export const checkAvailability = async (req, res) => {
 export const createBooking = async (req, res) => {
     try {
 
-    const {  checkInDate, checkOutDate, room, guests } = req.body;
+    const {  checkInDate, checkOutDate, room, guests, paymentMethod } = req.body;
 
     // Validate required fields
     if (!checkInDate || !checkOutDate || !room) {
@@ -162,6 +167,7 @@ export const createBooking = async (req, res) => {
             checkOutDate,
             totalPrice,
             guests: +guests,
+            paymentMethod: paymentMethod || 'Pay At Hotel',
         });
 
         // Send email - fetch user email from Clerk if not in DB
@@ -259,6 +265,135 @@ export const getUserBookings = async (req, res) => {
             message: error.message
         })
     }   
+}
+
+export const stripePayment = async (req, res) => {
+    try {
+        if (!stripeClient) {
+            return res.status(500).json({
+                success: false,
+                message: "Stripe is not configured on the server"
+            });
+        }
+
+        const { bookingId } = req.body;
+        if (!bookingId) {
+            return res.status(400).json({
+                success: false,
+                message: "bookingId is required"
+            });
+        }
+
+        const booking = await Booking.findById(bookingId);
+        if (!booking) {
+            return res.status(404).json({ success: false, message: "Booking not found" });
+        }
+
+        const requesterId = req.user?._id?.toString() || req.auth?.userId;
+        if (!requesterId || booking.user.toString() !== requesterId) {
+            return res.status(403).json({ success: false, message: "Unauthorized to pay for this booking" });
+        }
+
+        const roomData = await Room.findById(booking.room).populate("hotel");
+        if (!roomData || !roomData.hotel) {
+            return res.status(404).json({ success: false, message: "Room information not found" });
+        }
+
+        const totalPrice = booking.totalPrice;
+        const origin = req.headers.origin || process.env.CLIENT_URL || 'http://localhost:5173';
+
+        const session = await stripeClient.checkout.sessions.create({
+            payment_method_types: ['card'],
+            mode: 'payment',
+            customer_email: req.user?.email || undefined,
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: `Booking for ${roomData.roomType} at ${roomData.hotel.name}`,
+                            description: `Booking from ${new Date(booking.checkInDate).toLocaleDateString()} to ${new Date(booking.checkOutDate).toLocaleDateString()}`,
+                        },
+                        unit_amount: Math.round(totalPrice * 100),
+                    },
+                    quantity: 1,
+                },
+            ],
+            metadata: {
+                bookingId: booking._id.toString(),
+                userId: booking.user.toString()
+            },
+            success_url: `${origin}/payment/status?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${origin}/payment/status?cancelled=true&booking=${booking._id}`,
+        });
+
+        return res.status(200).json({
+            success: true,
+            url: session.url
+        });
+    }
+    catch (error) {
+        console.error('Stripe payment error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Unable to initiate Stripe checkout'
+        })
+    }
+}
+
+export const verifyStripeSession = async (req, res) => {
+    try {
+        if (!stripeClient) {
+            return res.status(500).json({
+                success: false,
+                message: "Stripe is not configured on the server"
+            });
+        }
+
+        const { sessionId } = req.params;
+        if (!sessionId) {
+            return res.status(400).json({ success: false, message: "sessionId is required" });
+        }
+
+        const session = await stripeClient.checkout.sessions.retrieve(sessionId);
+        if (!session) {
+            return res.status(404).json({ success: false, message: "Session not found" });
+        }
+
+        const bookingId = session.metadata?.bookingId;
+        if (!bookingId) {
+            return res.status(400).json({ success: false, message: "No booking metadata found" });
+        }
+
+        const booking = await Booking.findById(bookingId)
+            .populate('room')
+            .populate('hotel');
+
+        if (!booking) {
+            return res.status(404).json({ success: false, message: "Booking not found" });
+        }
+
+        const paymentCompleted = session.payment_status === 'paid' || session.status === 'complete';
+
+        if (paymentCompleted && (!booking.isPaid || booking.paymentMethod !== 'Stripe')) {
+            booking.isPaid = true;
+            booking.paymentMethod = 'Stripe';
+            booking.status = 'confirmed';
+            await booking.save();
+        }
+
+        res.status(200).json({
+            success: paymentCompleted,
+            paymentStatus: session.payment_status,
+            booking
+        });
+    } catch (error) {
+        console.error('Stripe session verification error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to verify payment session'
+        });
+    }
 }
 
 // API to get all bookings for a hotel owner
@@ -373,7 +508,7 @@ export const cancelBooking = async (req, res) => {
                                 <li style="margin: 10px 0;"><strong>Total Amount:</strong> $${booking.totalPrice?.toFixed(2) || '0.00'}</li>
                             </ul>
                         </div>
-                        <p style="color: #6B7280;">If you have any questions about refunds or need assistance, please contact our support team.</p>
+                        <p style="color: #6B7280;">If a payment was captured, the refund will be processed back to your original method within 7 business days. For any questions, please contact our support team.</p>
                         <p>We hope to serve you again soon!</p>
                         <p>Best regards,<br/><strong>QuickStay Team</strong></p>
                     </div>

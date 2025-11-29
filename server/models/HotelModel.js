@@ -5,6 +5,10 @@ const HotelSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    image: {
+        type: String,
+        default: ''
+    },
     address: {
         type: String,
         required: true

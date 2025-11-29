@@ -12,6 +12,7 @@ const MyBooking = () => {
     const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState('all') // all, pending, confirmed, cancelled
     const [cancellingId, setCancellingId] = useState(null)
+    const [payingId, setPayingId] = useState(null)
 
     // Helper function to get image URL
     const getImageUrl = (booking) => {
@@ -25,6 +26,24 @@ const MyBooking = () => {
         }
         // Fallback placeholder
         return 'https://via.placeholder.com/400x300?text=No+Image'
+    }
+
+    const handlePayNow = async (bookingId) => {
+        try {
+            setPayingId(bookingId)
+            const response = await bookingService.initiateStripeCheckout(bookingId)
+            if (response?.url) {
+                window.location.href = response.url
+            } else {
+                toast.error('Unable to start payment session')
+            }
+        } catch (error) {
+            console.error('Stripe payment error:', error)
+            const message = error.response?.data?.message || 'Failed to initiate Stripe payment'
+            toast.error(message)
+        } finally {
+            setPayingId(null)
+        }
     }
 
     useEffect(() => {
@@ -177,16 +196,24 @@ const MyBooking = () => {
                             <div className="flex flex-col md:flex-row gap-4">
                                 {/* Hotel Image */}
                                 <div className="relative group overflow-hidden rounded-xl shadow-md">
-                                    <img
-                                        src={getImageUrl(booking)}
-                                        alt={`${booking.hotel?.name || 'Hotel'} - ${booking.room?.roomType || 'Room'}`}
-                                        className="w-full md:w-44 h-32 md:h-28 object-cover cursor-pointer transition-transform duration-500 group-hover:scale-110"
-                                        onClick={() => booking.room?._id && navigate(`/rooms/${booking.room._id}`)}
-                                        onError={(e) => { 
-                                            console.error('Image failed to load:', e.target.src)
-                                            e.target.src = 'https://via.placeholder.com/400x300?text=No+Image' 
-                                        }}
-                                    />
+                                    {booking.room?.images?.length ? (
+                                        <img
+                                            src={getImageUrl(booking)}
+                                            alt={`${booking.hotel?.name || 'Hotel'} - ${booking.room?.roomType || 'Room'}`}
+                                            className="w-full md:w-44 h-32 md:h-28 object-cover cursor-pointer transition-transform duration-500 group-hover:scale-110"
+                                            onClick={() => booking.room?._id && navigate(`/rooms/${booking.room._id}`)}
+                                            onError={(e) => { 
+                                                console.error('Image failed to load:', e.target.src)
+                                                e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'
+                                            }}
+                                        />
+                                    ) : (
+                                        <div
+                                            className="w-full md:w-44 h-32 md:h-28 bg-gradient-to-br from-gray-200 via-amber-100 to-white dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 flex items-center justify-center text-xs font-semibold text-gray-500 dark:text-gray-300 tracking-wide"
+                                        >
+                                            No Photos Yet
+                                        </div>
+                                    )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 </div>
 
@@ -256,6 +283,18 @@ const MyBooking = () => {
                                         className="px-4 py-2.5 border-2 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-sm font-semibold disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed hover:scale-105 shadow-sm"
                                     >
                                         {cancellingId === booking._id ? 'Cancelling...' : '✕ Cancel Booking'}
+                                    </button>
+                                )}
+                                {!booking.isPaid && booking.status === 'pending' && (
+                                    <button
+                                        onClick={() => handlePayNow(booking._id)}
+                                        disabled={payingId === booking._id}
+                                        className="px-4 py-2.5 border-2 border-emerald-300 text-emerald-600 dark:border-emerald-700 dark:text-emerald-300 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all text-sm font-semibold disabled:opacity-60 cursor-pointer disabled:cursor-not-allowed hover:scale-105 shadow-sm flex items-center justify-center gap-2"
+                                    >
+                                        {payingId === booking._id && (
+                                            <span className="h-4 w-4 border-2 border-emerald-200 border-t-emerald-600 rounded-full animate-spin" aria-hidden="true"></span>
+                                        )}
+                                        {payingId === booking._id ? 'Redirecting…' : 'Pay Now'}
                                     </button>
                                 )}
                                 <button

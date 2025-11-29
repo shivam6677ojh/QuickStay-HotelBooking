@@ -107,6 +107,18 @@ export const bookingService = {
     const response = await apiClient.get('/booking/owner');
     return response.data;
   },
+
+  // Create Stripe checkout session
+  initiateStripeCheckout: async (bookingId) => {
+    const response = await apiClient.post('/booking/stripe-payment', { bookingId });
+    return response.data;
+  },
+
+  // Verify Stripe session after redirect
+  verifyStripeSession: async (sessionId) => {
+    const response = await apiClient.get(`/booking/stripe-session/${sessionId}`);
+    return response.data;
+  },
 };
 
 // Hotel API services

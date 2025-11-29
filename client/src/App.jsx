@@ -26,6 +26,7 @@ import AdminBookings from "./Pages/Admin/AdminBookings";
 import AdminHotels from "./Pages/Admin/AdminHotels";
 import AdminRooms from "./Pages/Admin/AdminRooms";
 import AdminUsers from "./Pages/Admin/AdminUsers";
+import PaymentStatus from "./Pages/PaymentStatus";
 import ErrorBoundary from "./components/ErrorBoundary";
 
 
@@ -82,6 +83,7 @@ const App = () => {
             <Route path="/rooms/:id" element={<RoomDetails />} />
             <Route path="/contactHere" element={<ContactHere />} />
             <Route path="/my-bookings" element={<MyBooking />} />
+            <Route path="/payment/status" element={<PaymentStatus />} />
             <Route path="/about" element={<About />} />
             <Route path="/admin-setup" element={<AdminSetup />} />
 

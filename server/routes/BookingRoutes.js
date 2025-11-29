@@ -5,7 +5,9 @@ import {
   getUserBookings,
   getOwnerBookings,
   cancelBooking,
-  checkAvailability
+  checkAvailability,
+  stripePayment,
+  verifyStripeSession
 } from '../controllers/BookingController.js';
 
 const BookingRouter = express.Router();
@@ -24,5 +26,9 @@ BookingRouter.get('/owner', protect, getOwnerBookings);
 
 // Cancel booking
 BookingRouter.put('/:id/cancel', protect, cancelBooking);
+
+
+BookingRouter.post('/stripe-payment', protect, stripePayment);
+BookingRouter.get('/stripe-session/:sessionId', protect, verifyStripeSession);
 
 export default BookingRouter;
