@@ -1,36 +1,23 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { ThemeContext } from './ThemeContext';
 
-// ThemeProvider sets the initial theme synchronously using useLayoutEffect
-// to avoid a flash-of-unstyled (light) state and persists choice to localStorage.
+// ThemeProvider now forces dark mode globally (per design request)
 export const ThemeProvider = ({ children }) => {
-        const [isDarkMode, setIsDarkMode] = useState(() => {
-            try {
-                const saved = localStorage.getItem('theme');
-                if (saved) return saved === 'dark';
-            } catch {
-                // ignore (e.g. during SSR or restricted env)
-            }
-        return typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    });
+  const [isDarkMode] = useState(true);
 
-    // useLayoutEffect runs before paint so the .dark class is applied immediately
-    useLayoutEffect(() => {
-            try {
-                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-            } catch {
-                // ignore
-            }
+  useLayoutEffect(() => {
+    try {
+      localStorage.setItem('theme', 'dark');
+    } catch {
+      // ignore storage issues
+    }
 
-        if (isDarkMode) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    }, [isDarkMode]);
+    document.documentElement.classList.add('dark');
+  }, []);
 
-    const toggleTheme = () => setIsDarkMode((v) => !v);
+  // toggle becomes a no-op but preserves context contract
+  const toggleTheme = () => {};
 
-    return <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>{children}</ThemeContext.Provider>;
+  return <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>{children}</ThemeContext.Provider>;
 };
 

@@ -10,7 +10,6 @@ import ContactHere from "./components/ContactHere";
 import MyBooking from "./Pages/MyBooking";
 import HotelReg from "./components/HotelReg";
 import Layout from "./Pages/HotelOwner/Layout";
-import ThemeToggle from "./components/ThemeToggle";
 import Dashboard from "./Pages/HotelOwner/Dashboard.jsx";
 import Atroom from "./Pages/HotelOwner/AtRoom.jsx";
 import ListRoom from "./Pages/HotelOwner/ListRoom.jsx";
@@ -73,7 +72,6 @@ const App = () => {
       <AuthSetup />
       <SessionTimeout />
       {!isOwnerPath && !isAdminPath && <Navbar />}
-      {!isAdminPath && <ThemeToggle />}
   {/* HotelReg intentionally disabled during development; enable when needed */}
 
       <main className="app-main min-h-[70vh]">
