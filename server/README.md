@@ -21,11 +21,22 @@ CLOUDINARY_CLOUD_NAME=...
 CLOUDINARY_API_KEY=...
 CLOUDINARY_API_SECRET=...
 NODE_ENV=development
+GROQ_API_KEY=gsk_...              # required for the AI concierge
+GROQ_MODEL=llama3-70b-8192        # optional, defaults to llama3-70b-8192
+# GROQ_API_URL=https://api.groq.com/openai/v1/chat/completions (optional override)
 ```
 
 Notes:
 - Verify which Clerk variable your code expects (`CLERK_API_KEY`, `CLERK_SECRET_KEY`, or `CLERK_JWT_VERIFICATION_KEY`) by checking `server/configs` or `server/server.js`.
 - Cloudinary variables are only required if the project uploads images.
+- The AI concierge will fall back to a 503 response unless `GROQ_API_KEY` is provided.
+
+## AI concierge endpoint
+- Route: `POST /api/ai/chat`
+- Body: `{ messages: [{ role: "user" | "assistant", content: string }], context?: string }`
+- Response: `{ success: boolean, message?: string }`
+
+The controller forwards the conversation to Groq's hosted LLaMA 3 70B (`llama3-70b-8192` by default). Incoming conversations are trimmed to the most recent 12 turns to stay within token limits.
 
 ## Install
 From the `server/` directory:

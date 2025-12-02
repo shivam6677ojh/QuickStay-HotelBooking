@@ -10,6 +10,7 @@ import connectCloudinary from "./configs/Cloudinary.js";
 import RoomRouter from "./routes/RoomRoutes.js";
 import BookingRouter from "./routes/BookingRoutes.js";
 import AdminRoutes from "./routes/AdminRoutes.js";
+import ChatRoutes from "./routes/ChatRoutes.js";
 
 const app = express()
 
@@ -78,6 +79,7 @@ app.use("/api/hotel", HotelRoutes)
 app.use("/api/room", RoomRouter)
 app.use("/api/booking", BookingRouter)
 app.use("/api/admin", AdminRoutes)
+app.use("/api/ai", ChatRoutes)
 
 app.get("/", (req, res) => {
     res.send("API is running fine")

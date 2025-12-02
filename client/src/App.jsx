@@ -27,6 +27,7 @@ import AdminRooms from "./Pages/Admin/AdminRooms";
 import AdminUsers from "./Pages/Admin/AdminUsers";
 import PaymentStatus from "./Pages/PaymentStatus";
 import ErrorBoundary from "./components/ErrorBoundary";
+import AIConcierge from "./components/AIConcierge";
 
 
 const App = () => {
@@ -115,6 +116,7 @@ const App = () => {
         </main>
 
         {!isOwnerPath && !isAdminPath && <Footer />}
+        {!isOwnerPath && !isAdminPath && <AIConcierge />}
       </div>
     </ErrorBoundary>
   );
