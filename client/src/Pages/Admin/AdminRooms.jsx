@@ -22,8 +22,8 @@ const AdminRooms = () => {
     try {
       setLoading(true);
       const response = await apiClient.get('/admin/rooms');
-      console.log('Admin Rooms Response:', response.data);
-      console.log('Total rooms fetched:', response.data.rooms?.length || 0);
+      // console.log('Admin Rooms Response:', response.data);
+      // console.log('Total rooms fetched:', response.data.rooms?.length || 0);
       setRooms(response.data.rooms || []);
     } catch (error) {
       console.error('Error fetching rooms:', error);

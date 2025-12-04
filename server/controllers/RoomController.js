@@ -89,7 +89,7 @@ export const createRoom = async (req, res) => {
             isAvailable: true
         });
 
-        console.log(`✅ Room created: ${newRoom.roomType} - $${newRoom.pricePerNignt}/night`);
+        // console.log(`✅ Room created: ${newRoom.roomType} - $${newRoom.pricePerNignt}/night`);
 
         res.status(200).json({
             success: true,
@@ -210,7 +210,7 @@ export const getRoom = async (req, res) => {
             }
         }
 
-        console.log(`✅ Found ${availableRooms.length} available rooms (${rooms.length} before date filtering)`);
+        // console.log(`✅ Found ${availableRooms.length} available rooms (${rooms.length} before date filtering)`);
         
         res.status(200).json({
             success: true,
@@ -240,7 +240,7 @@ export const getRoomById = async (req, res) => {
             });
         }
         
-        console.log(`✅ Found room: ${room.roomType}`);
+        // console.log(`✅ Found room: ${room.roomType}`);
         
         res.status(200).json({
             success: true,
@@ -262,7 +262,7 @@ export const getOwnerRoom = async (req, res) => {
         // Get all rooms (not just from one hotel)
         const rooms = await Room.find({}).populate("hotel");
         
-        console.log(`📋 Owner fetched ${rooms.length} total rooms`);
+        // console.log(`📋 Owner fetched ${rooms.length} total rooms`);
     
         res.status(200).json({ 
             success: true, 

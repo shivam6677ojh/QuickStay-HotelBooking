@@ -9,7 +9,7 @@ const AuthSetup = () => {
     if (isSignedIn && getToken) {
       // Set the token getter function for API client
       setTokenGetter(getToken);
-      console.log('Auth token getter configured');
+      // console.log('Auth token getter configured');
     }
   }, [getToken, isSignedIn]);
 

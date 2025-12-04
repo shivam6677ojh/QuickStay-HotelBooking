@@ -181,7 +181,7 @@ export const createBooking = async (req, res) => {
                 const clerkUser = await clerkClient.users.getUser(req.auth.userId);
                 userEmail = clerkUser.emailAddresses?.[0]?.emailAddress;
                 userName = clerkUser.firstName ? `${clerkUser.firstName} ${clerkUser.lastName || ''}`.trim() : userName;
-                console.log(`📧 Fetched email from Clerk: ${userEmail}`);
+                // console.log(`📧 Fetched email from Clerk: ${userEmail}`);
             } catch (clerkError) {
                 console.error('⚠️  Failed to fetch user from Clerk:', clerkError.message);
             }
@@ -217,16 +217,16 @@ export const createBooking = async (req, res) => {
                 };
 
                 await transporter.sendMail(mailOptions);
-                console.log(`✅ Booking confirmation email sent to ${userEmail}`);
+                // console.log(`✅ Booking confirmation email sent to ${userEmail}`);
             } catch (emailError) {
                 console.error('⚠️  Failed to send confirmation email:', emailError.message);
                 // Don't fail the booking if email fails
             }
         } else {
-            console.log('⚠️  Skipping email - user email not available');
+            // console.log('⚠️  Skipping email - user email not available');
         }
 
-        console.log(`✅ Booking created for user ${userId}`);
+        // console.log(`✅ Booking created for user ${userId}`);
 
         res.status(201).json({
             success: true,
@@ -482,7 +482,7 @@ export const cancelBooking = async (req, res) => {
                 const clerkUser = await clerkClient.users.getUser(req.auth.userId);
                 userEmail = clerkUser.emailAddresses?.[0]?.emailAddress;
                 userName = clerkUser.firstName ? `${clerkUser.firstName} ${clerkUser.lastName || ''}`.trim() : userName;
-                console.log(`📧 Fetched email from Clerk for cancellation: ${userEmail}`);
+                // console.log(`📧 Fetched email from Clerk for cancellation: ${userEmail}`);
             } catch (clerkError) {
                 console.error('⚠️  Failed to fetch user from Clerk:', clerkError.message);
             }
@@ -516,13 +516,13 @@ export const cancelBooking = async (req, res) => {
                 };
 
                 await transporter.sendMail(mailOptions);
-                console.log(`✅ Booking cancellation email sent to ${userEmail}`);
+                // console.log(`✅ Booking cancellation email sent to ${userEmail}`);
             } catch (emailError) {
                 console.error('⚠️  Failed to send cancellation email:', emailError.message);
                 // Don't fail the cancellation if email fails
             }
         } else {
-            console.log('⚠️  Skipping cancellation email - user email not available');
+            // console.log('⚠️  Skipping cancellation email - user email not available');
         }
         
         res.status(200).json({

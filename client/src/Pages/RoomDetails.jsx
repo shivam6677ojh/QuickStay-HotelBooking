@@ -162,9 +162,9 @@ const RoomDetails = () => {
                 paymentMethod: paymentType === 'stripe' ? 'Stripe' : 'Pay At Hotel'
             }
 
-            console.log('Creating booking with payload:', bookingPayload)
+            // console.log('Creating booking with payload:', bookingPayload)
             const response = await bookingService.createBooking(bookingPayload)
-            console.log('Booking response:', response)
+            // console.log('Booking response:', response)
             
             if (response.success) {
                 if (paymentType === 'stripe') {
@@ -259,7 +259,7 @@ const RoomDetails = () => {
                             key={index} 
                             className="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer hover:shadow-2xl transition-shadow duration-300"
                             onClick={() => {
-                                console.log('Image clicked:', image);
+                                // console.log('Image clicked:', image);
                                 setMainImage(image);
                             }}
                         >

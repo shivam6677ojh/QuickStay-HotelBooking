@@ -63,14 +63,14 @@ const MyBooking = () => {
     const fetchBookings = async () => {
         try {
             setLoading(true)
-            console.log('Fetching bookings...')
+            // console.log('Fetching bookings...')
             const response = await bookingService.getUserBookings()
-            console.log('Bookings response:', response)
-            console.log('First booking data:', response.bookings?.[0])
+            // console.log('Bookings response:', response)
+            // console.log('First booking data:', response.bookings?.[0])
             if (response.bookings?.[0]) {
-                console.log('Room data:', response.bookings[0].room)
-                console.log('Hotel data:', response.bookings[0].hotel)
-                console.log('Room images:', response.bookings[0].room?.images)
+                // console.log('Room data:', response.bookings[0].room)
+                // console.log('Hotel data:', response.bookings[0].hotel)
+                // console.log('Room images:', response.bookings[0].room?.images)
             }
             setBookings(response.bookings || [])
         } catch (error) {

@@ -16,15 +16,15 @@ const AdminLogin = () => {
         // Check role from Clerk metadata (most reliable source)
         const userRole = user?.publicMetadata?.role || user?.unsafeMetadata?.role;
         
-        console.log('🔐 Admin Login - Verifying access for:', {
+        /* console.log('🔐 Admin Login - Verifying access for:', {
           userId: user.id,
           email: user.primaryEmailAddress?.emailAddress,
           role: userRole,
           publicMetadata: user.publicMetadata,
-        });
+        }); */
         
         if (userRole === 'admin' || userRole === 'owner') {
-          console.log('✅ Admin access granted - redirecting to dashboard');
+          // console.log('✅ Admin access granted - redirecting to dashboard');
           navigate('/admin/dashboard');
         } else {
           console.warn('❌ Admin access denied - user role:', userRole || 'none');

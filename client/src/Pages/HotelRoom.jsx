@@ -97,9 +97,9 @@ const HotelRoom = () => {
                     queryFilters.sortBy = 'newest';
                 }
                 
-                console.log('Sending filters to API:', queryFilters);
+                // console.log('Sending filters to API:', queryFilters);
                 const response = await roomService.getRooms(queryFilters);
-                console.log('Received rooms:', response.rooms?.length || 0, 'rooms');
+                // console.log('Received rooms:', response.rooms?.length || 0, 'rooms');
                 setRooms(response.rooms || []);
             } catch (error) {
                 console.error('Error fetching rooms:', error);

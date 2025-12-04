@@ -29,9 +29,9 @@ const ListRoom = () => {
   const fetchRooms = async () => {
     try {
       setLoading(true)
-      console.log('Fetching owner rooms...')
+      // console.log('Fetching owner rooms...')
       const response = await roomService.getOwnerRooms()
-      console.log('Rooms response:', response)
+      // console.log('Rooms response:', response)
       setRooms(response.rooms || [])
     } catch (error) {
       console.error('Error fetching rooms:', error)

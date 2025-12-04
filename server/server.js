@@ -68,7 +68,7 @@ app.use(clerkMiddleware());
 
 // Request logging middleware
 app.use((req, res, next) => {
-    console.log(`📥 ${req.method} ${req.path}`);
+    // console.log(`📥 ${req.method} ${req.path}`);
     next();
 });
 
@@ -83,7 +83,7 @@ app.use("/api/ai", ChatRoutes)
 
 app.get("/", (req, res) => {
     res.send("API is running fine")
-    console.log("API is running fine")
+    // console.log("API is running fine")
 })
 
 // For Vercel serverless deployment

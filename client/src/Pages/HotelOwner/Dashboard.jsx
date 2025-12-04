@@ -38,17 +38,17 @@ const Dashboard = () => {
     try {
       setLoading(true)
       
-      console.log('Fetching dashboard data...')
+      // console.log('Fetching dashboard data...')
       
       // Fetch owner's rooms
       const roomsResponse = await roomService.getOwnerRooms()
-      console.log('Owner Rooms response:', roomsResponse)
-      console.log('Total rooms:', roomsResponse.rooms?.length || 0)
+      // console.log('Owner Rooms response:', roomsResponse)
+      // console.log('Total rooms:', roomsResponse.rooms?.length || 0)
       const rooms = roomsResponse.rooms || []
       
       // Fetch owner's bookings
       const bookingsResponse = await bookingService.getOwnerBookings()
-      console.log('Bookings response:', bookingsResponse)
+      // console.log('Bookings response:', bookingsResponse)
       const bookings = bookingsResponse.bookings || []
       
       // Calculate stats

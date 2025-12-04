@@ -18,7 +18,7 @@ export const protect = async (req, res, next) => {
 
         // If user doesn't exist in DB, create a minimal user record
         if (!user) {
-            console.log(`⚠️  User ${userId} not found in database - creating minimal user record`);
+            // console.log(`⚠️  User ${userId} not found in database - creating minimal user record`);
             
             // Create a minimal user record with Clerk ID
             // The webhook should have created this, but we'll create it as fallback
@@ -30,7 +30,7 @@ export const protect = async (req, res, next) => {
                     image: '', // Empty image
                     role: 'user'
                 });
-                console.log(`✅ Created minimal user record for ${userId}`);
+                // console.log(`✅ Created minimal user record for ${userId}`);
             } catch (createError) {
                 console.error('❌ Failed to create user:', createError.message);
                 req.user = null;
@@ -76,16 +76,16 @@ export const adminOnly = async (req, res, next) => {
                     roleSource = 'clerk_metadata';
                 }
                 
-                console.log('🔐 Admin Access Check:', {
+                /* console.log('🔐 Admin Access Check:', {
                     userId: clerkUserId,
                     email: clerkUser?.emailAddresses?.[0]?.emailAddress,
                     role: userRole,
                     roleSource: roleSource,
                     publicMetadata: clerkUser?.publicMetadata,
                     hasAccess: userRole === 'admin' || userRole === 'owner'
-                });
+                }); */
             }
-        } catch (clerkErr) {
+        } catch (clerkError) {
             console.warn('⚠️  Failed to fetch Clerk user for role check:', clerkErr.message || clerkErr);
             console.warn('⚠️  Ensure CLERK_SECRET_KEY is set in environment variables');
             // keep DB role as fallback
@@ -102,7 +102,6 @@ export const adminOnly = async (req, res, next) => {
                 message: "Access denied. Admin privileges required." 
             });
         }
-
         // User is admin, proceed
         next();
     } catch (error) {
