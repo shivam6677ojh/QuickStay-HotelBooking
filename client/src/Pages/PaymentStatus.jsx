@@ -146,7 +146,7 @@ const PaymentStatus = () => {
               </div>
               <div>
                 <p className="text-gray-500 dark:text-gray-400">Total</p>
-                <p className="font-semibold text-gray-900 dark:text-white">${booking.totalPrice?.toFixed(2)}</p>
+                <p className="font-semibold text-gray-900 dark:text-white">Rs {booking.totalPrice?.toFixed(2)}</p>
               </div>
             </div>
           </div>

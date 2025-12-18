@@ -225,6 +225,83 @@ export const getRoom = async (req, res) => {
     }
 }
 
+// Public: destination suggestions for typeahead (by city/name/address)
+export const getDestinationSuggestions = async (req, res) => {
+    try {
+        const { query } = req.query;
+        const q = (query || '').trim();
+        if (!q) {
+            return res.status(200).json({ success: true, suggestions: [] });
+        }
+
+        // Find hotels matching prefix/substring in city, name, or address
+        const regex = new RegExp(q, 'i');
+        const hotels = await Hotel.find(
+            {
+                $or: [
+                    { city: { $regex: regex } },
+                    { name: { $regex: regex } },
+                    { address: { $regex: regex } }
+                ]
+            }
+        )
+        .select('city name address')
+        .limit(50);
+
+        // Build distinct suggestions prioritizing City and Name,City combos
+        const seen = new Set();
+        const out = [];
+        for (const h of hotels) {
+            if (h.city) {
+                const key = `city:${h.city.toLowerCase()}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    out.push(h.city);
+                }
+            }
+            if (h.name && h.city) {
+                const label = `${h.name}, ${h.city}`;
+                const key = `namecity:${label.toLowerCase()}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    out.push(label);
+                }
+            } else if (h.name) {
+                const key = `name:${h.name.toLowerCase()}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    out.push(h.name);
+                }
+            }
+        }
+
+        // Fallback: extract possible city-like token from address
+        if (out.length < 10) {
+            for (const h of hotels) {
+                if (!h.address) continue;
+                const addr = String(h.address);
+                // naive split by comma, pick trimmed segments that match query
+                const parts = addr.split(',').map(s => s.trim()).filter(Boolean);
+                for (const p of parts) {
+                    if (!regex.test(p)) continue;
+                    const key = `addr:${p.toLowerCase()}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        out.push(p);
+                    }
+                    if (out.length >= 20) break;
+                }
+                if (out.length >= 20) break;
+            }
+        }
+
+        res.status(200).json({ success: true, suggestions: out.slice(0, 15) });
+    } catch (error) {
+        console.error('Error fetching destination suggestions:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+
 // Api to get single room by ID
 
 export const getRoomById = async (req, res) => {

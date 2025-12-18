@@ -92,7 +92,7 @@ const AdminDashboard = () => {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-indigo-100 mb-1">Total Revenue</p>
-            <p className="text-4xl font-bold">${stats?.totalRevenue?.toLocaleString() || 0}</p>
+            <p className="text-4xl font-bold">Rs {stats?.totalRevenue?.toLocaleString() || 0}</p>
           </div>
           <div className="text-6xl">💰</div>
         </div>

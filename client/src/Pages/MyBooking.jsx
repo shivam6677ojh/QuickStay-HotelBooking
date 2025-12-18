@@ -266,7 +266,7 @@ const MyBooking = () => {
                             {/* Payment Info */}
                             <div className="flex flex-col gap-1.5 text-sm bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20 p-4 rounded-lg">
                                 <p className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                                    ${booking.totalPrice}
+                                    Rs {booking.totalPrice}
                                 </p>
                                 <p className="text-xs text-gray-600 dark:text-gray-400">{booking.paymentMethod || 'Pay At Hotel'}</p>
                                 <p className={`text-xs font-semibold ${booking.isPaid ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>

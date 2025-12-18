@@ -184,7 +184,7 @@ const AdminRooms = () => {
                 <div className="space-y-2 mb-4 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Price:</span>
-                    <span className="font-semibold text-gray-900">${Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}/night</span>
+                    <span className="font-semibold text-gray-900">Rs {Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}/night</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Capacity:</span>
@@ -250,7 +250,7 @@ const AdminRooms = () => {
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm font-medium text-gray-700">
-                Price Per Night (USD)
+                Price Per Night (INR)
                 <input
                   type="number"
                   name="pricePerNight"

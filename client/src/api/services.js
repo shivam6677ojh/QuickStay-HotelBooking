@@ -61,6 +61,11 @@ export const roomService = {
     const response = await apiClient.delete(`/room/${id}`);
     return response.data;
   },
+
+  getDestinationSuggestions: async (query) => {
+    const response = await apiClient.get(`/room/suggestions`, { params: { query } });
+    return response.data;
+  },
 };
 
 // Booking API services

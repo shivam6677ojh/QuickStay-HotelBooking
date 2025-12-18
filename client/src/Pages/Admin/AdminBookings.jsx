@@ -159,7 +159,7 @@ const AdminBookings = () => {
                       {booking.guests || '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                      ${Number(booking.totalPrice || 0).toFixed(2)}
+                      Rs {Number(booking.totalPrice || 0).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <div className="font-medium text-gray-900">{booking.paymentMethod || 'Pay At Hotel'}</div>
@@ -258,7 +258,7 @@ const AdminBookings = () => {
                   </div>
                   <div className="flex items-center justify-between text-lg font-bold text-gray-900 border-t pt-3">
                     <span>Total</span>
-                    <span>${Number(detailsBooking.totalPrice || 0).toFixed(2)}</span>
+                    <span>Rs {Number(detailsBooking.totalPrice || 0).toFixed(2)}</span>
                   </div>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-4">

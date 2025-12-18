@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets.js";
 import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
+import { roomService } from "../api/services";
 
 const BookIcon = () => (
     <svg className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" >
@@ -23,6 +24,9 @@ const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [suggestions, setSuggestions] = useState([]);
+    const [isSuggestLoading, setIsSuggestLoading] = useState(false);
+    const [highlightIndex, setHighlightIndex] = useState(-1);
     const searchRef = useRef(null);
 
     const { openSignIn } = useClerk();
@@ -71,6 +75,8 @@ const Navbar = () => {
             navigate(`/rooms?destination=${encodeURIComponent(searchQuery.trim())}`);
             setShowSearch(false);
             setSearchQuery('');
+            setSuggestions([]);
+            setHighlightIndex(-1);
         }
     };
 
@@ -78,6 +84,60 @@ const Navbar = () => {
         setShowSearch(!showSearch);
         if (showSearch) {
             setSearchQuery('');
+            setSuggestions([]);
+            setHighlightIndex(-1);
+        }
+    };
+
+    // Debounced suggestions fetch
+    useEffect(() => {
+        let timer;
+        const fetchSuggestions = async () => {
+            const q = searchQuery.trim();
+            if (q.length < 2) {
+                setSuggestions([]);
+                setHighlightIndex(-1);
+                return;
+            }
+            try {
+                setIsSuggestLoading(true);
+                const res = await roomService.getDestinationSuggestions(q);
+                setSuggestions(Array.isArray(res.suggestions) ? res.suggestions : []);
+                setHighlightIndex(-1);
+            } catch (err) {
+                // silently ignore
+                setSuggestions([]);
+                setHighlightIndex(-1);
+            } finally {
+                setIsSuggestLoading(false);
+            }
+        };
+        timer = setTimeout(fetchSuggestions, 250);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    const onPickSuggestion = (value) => {
+        setSearchQuery(value);
+        navigate(`/rooms?destination=${encodeURIComponent(value)}`);
+        setShowSearch(false);
+        setSuggestions([]);
+        setHighlightIndex(-1);
+    };
+
+    const onKeyDownSuggest = (e) => {
+        if (!showSearch) return;
+        if (!suggestions.length) return;
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setHighlightIndex((prev) => (prev + 1) % suggestions.length);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setHighlightIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length);
+        } else if (e.key === 'Enter') {
+            if (highlightIndex >= 0 && highlightIndex < suggestions.length) {
+                e.preventDefault();
+                onPickSuggestion(suggestions[highlightIndex]);
+            }
         }
     };
 
@@ -145,6 +205,7 @@ const Navbar = () => {
                                         type="text"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
+                                        onKeyDown={onKeyDownSuggest}
                                         placeholder="Search hotels, destinations..."
                                         className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-sm"
                                         autoFocus
@@ -155,6 +216,25 @@ const Navbar = () => {
                                     >
                                         Search
                                     </button>
+                                </div>
+                                {/* Suggestions List */}
+                                <div className="max-h-60 overflow-y-auto mt-1 -mb-1 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+                                    {isSuggestLoading && (
+                                        <div className="px-3 py-2 text-xs text-gray-500 dark:text-gray-400">Loading…</div>
+                                    )}
+                                    {!isSuggestLoading && suggestions.map((s, idx) => (
+                                        <button
+                                            key={`${s}-${idx}`}
+                                            type="button"
+                                            onClick={() => onPickSuggestion(s)}
+                                            className={`w-full text-left px-3 py-2 text-sm cursor-pointer hover:bg-indigo-50 dark:hover:bg-gray-800 ${idx === highlightIndex ? 'bg-indigo-50 dark:bg-gray-800' : ''}`}
+                                        >
+                                            {s}
+                                        </button>
+                                    ))}
+                                    {!isSuggestLoading && searchQuery.trim().length >= 2 && suggestions.length === 0 && (
+                                        <div className="px-3 py-2 text-xs text-gray-500 dark:text-gray-400">No matches</div>
+                                    )}
                                 </div>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">Try: "Mumbai", "Delhi", "Bangalore", or "Beach Hotels"</p>
                             </form>

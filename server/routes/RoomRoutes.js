@@ -8,7 +8,8 @@ import {
     getRoomById, 
     updateRoom,
     deleteRoom,
-    toggleRoomAvailibilty 
+    toggleRoomAvailibilty, 
+    getDestinationSuggestions
 } from '../controllers/RoomController.js';
 
 const RoomRouter = express.Router();
@@ -20,6 +21,7 @@ RoomRouter.post('/toggle-availbility', protect, adminOnly, toggleRoomAvailibilty
 
 // Public routes (no authentication needed)
 RoomRouter.get('/', getRoom)
+RoomRouter.get('/suggestions', getDestinationSuggestions)
 RoomRouter.get('/:id', getRoomById)
 
 // Admin-only routes with :id parameter

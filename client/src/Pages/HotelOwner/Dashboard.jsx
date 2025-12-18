@@ -161,7 +161,7 @@ const Dashboard = () => {
           <div className='flex items-center justify-between'>
             <div>
               <p className='text-purple-600 dark:text-purple-400 text-sm font-medium mb-1'>Total Revenue</p>
-              <p className='text-3xl font-bold text-purple-900 dark:text-purple-100'>${stats.totalRevenue}</p>
+              <p className='text-3xl font-bold text-purple-900 dark:text-purple-100'>Rs {stats.totalRevenue}</p>
             </div>
             <div className='bg-purple-500 dark:bg-purple-600 p-3 rounded-full'>
               <svg className='w-6 h-6 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -251,7 +251,7 @@ const Dashboard = () => {
                   </td>
 
                   <td className='py-3 px-4 text-gray-800 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 text-center font-semibold'>
-                    ${booking.totalPrice || 0}
+                    Rs {booking.totalPrice || 0}
                   </td>
 
                   <td className='py-3 px-4 border-t border-gray-200 dark:border-gray-700'>

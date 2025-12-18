@@ -286,7 +286,7 @@ const RoomDetails = () => {
             <div className='mt-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-gradient-to-r from-cyan-100 to-teal-100 dark:from-cyan-900/20 dark:to-teal-900/20 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-cyan-200 dark:border-cyan-800'>
                 <h2 className='font-playfair text-2xl md:text-4xl font-bold bg-gradient-to-r from-cyan-700 to-teal-700 dark:from-cyan-300 dark:to-teal-300 bg-clip-text text-transparent'>Experience Luxury Like Never Before</h2>
                 <div className="flex flex-col items-end">
-                    <p className='text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-600 to-teal-600 dark:from-cyan-400 dark:to-teal-400 bg-clip-text text-transparent'>${Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}</p>
+                    <p className='text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-600 to-teal-600 dark:from-cyan-400 dark:to-teal-400 bg-clip-text text-transparent'>Rs {Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">per night</p>
                 </div>
             </div>
@@ -409,7 +409,7 @@ const RoomDetails = () => {
                                     </span>
                                     <div>
                                         <p className='text-xs text-gray-500'>Price/Night</p>
-                                        <p className='text-lg font-semibold text-gray-900 dark:text-gray-100'>${Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}</p>
+                                        <p className='text-lg font-semibold text-gray-900 dark:text-gray-100'>Rs {Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}</p>
                                     </div>
                                 </div>
                                 <div className='rounded-xl border border-green-200 dark:border-emerald-800 bg-white/70 dark:bg-emerald-900/20 p-4 flex items-center gap-3'>
@@ -418,7 +418,7 @@ const RoomDetails = () => {
                                     </span>
                                     <div>
                                         <p className='text-xs text-gray-500'>Subtotal</p>
-                                        <p className='text-lg font-semibold text-gray-900 dark:text-gray-100'>${Number(availabilityInfo.totalPrice || 0).toFixed(2)}</p>
+                                        <p className='text-lg font-semibold text-gray-900 dark:text-gray-100'>Rs {Number(availabilityInfo.totalPrice || 0).toFixed(2)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -429,8 +429,8 @@ const RoomDetails = () => {
                                 </div>
                                 <div className='mt-3 space-y-2 text-gray-700 dark:text-gray-200'>
                                     <div className='flex items-center justify-between'>
-                                        <span>{availabilityInfo.nights} × ${Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}</span>
-                                        <span>${Number(availabilityInfo.totalPrice || 0).toFixed(2)}</span>
+                                        <span>{availabilityInfo.nights} × Rs {Number(room.pricePerNignt || room.pricePerNight || 0).toFixed(2)}</span>
+                                        <span>Rs {Number(availabilityInfo.totalPrice || 0).toFixed(2)}</span>
                                     </div>
                                     <div className='flex items-center justify-between text-sm text-gray-500'>
                                         <span>Fees</span>
@@ -439,7 +439,7 @@ const RoomDetails = () => {
                                 </div>
                                 <div className='mt-4 pt-3 border-t border-green-200/70 dark:border-emerald-800/70 flex items-center justify-between'>
                                     <span className='text-lg font-semibold'>Total due at hotel</span>
-                                    <span className='text-2xl font-bold text-green-700 dark:text-emerald-300'>${Number(availabilityInfo.totalPrice || 0).toFixed(2)}</span>
+                                    <span className='text-2xl font-bold text-green-700 dark:text-emerald-300'>Rs {Number(availabilityInfo.totalPrice || 0).toFixed(2)}</span>
                                 </div>
                                 <p className='mt-2 text-xs text-green-800/80 dark:text-emerald-400/80'>No prepayment needed • Free cancellation until check‑in</p>
                             </div>
@@ -597,7 +597,7 @@ const RoomDetails = () => {
                             <div className='pt-3 border-t border-gray-200'>
                                 <div className='flex justify-between text-lg'>
                                     <span className='font-bold'>Total Amount:</span>
-                                    <span className='font-bold text-green-600'>${calculateTotalPrice()}</span>
+                                    <span className='font-bold text-green-600'>Rs {calculateTotalPrice()}</span>
                                 </div>
                             </div>
                             <div className='bg-blue-50 p-3 rounded-lg'>

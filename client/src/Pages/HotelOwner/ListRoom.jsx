@@ -166,7 +166,7 @@ const ListRoom = () => {
                     </td>
                     
                     <td className='py-3 px-4 text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 text-center font-semibold'>
-                      ${room.pricePerNignt || room.pricePerNight}
+                      Rs {room.pricePerNignt || room.pricePerNight}
                     </td>
                     
                     <td className='py-3 px-4 border-t border-gray-200 dark:border-gray-700'>

@@ -154,7 +154,7 @@ const HotelCard = ({ room, index }) => {
                             <span className='text-xs text-gray-500 dark:text-gray-400 font-medium'>Starting from</span>
                             <div className='flex items-baseline gap-1'>
                                 <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">
-                                    ${room.pricePerNight || room.pricePerNignt || 0}
+                                    Rs {room.pricePerNight || room.pricePerNignt || 0}
                                 </span>
                                 <span className='text-sm text-gray-500 dark:text-gray-400'>/night</span>
                             </div>
