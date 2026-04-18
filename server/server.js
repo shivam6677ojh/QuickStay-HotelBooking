@@ -55,6 +55,7 @@ app.use(cors());
 app.use(express.json());
 
 // Middleware to ensure DB connection before processing requests
+
 app.use(async (req, res, next) => {
     try {
         await ensureDBConnection();

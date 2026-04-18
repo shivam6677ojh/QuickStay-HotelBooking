@@ -93,7 +93,9 @@ const AIConcierge = () => {
 
       setMessages((prev) => [...prev, reply]);
     } catch (err) {
-      console.error("AI concierge error", err);
+      if (import.meta.env.DEV) {
+        console.error("AI concierge error", err);
+      }
       setError("The concierge is offline right now. Please try again in a moment.");
       setMessages((prev) => [
         ...prev,
@@ -110,18 +112,19 @@ const AIConcierge = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="pointer-events-none fixed inset-x-0 bottom-3 z-50 flex justify-end px-3 sm:inset-auto sm:bottom-5 sm:right-5 sm:px-0">
       {isOpen && (
-        <div className="mb-3 w-[320px] max-w-[90vw] rounded-3xl border border-white/40 bg-white/90 p-4 shadow-2xl backdrop-blur dark:bg-zinc-900/90">
-          <div className="mb-3 flex items-start justify-between gap-2">
+        <div className="pointer-events-auto mb-2 flex h-[70vh] w-full max-w-sm flex-col rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-2xl backdrop-blur sm:mb-3 sm:h-[520px] sm:w-[360px] dark:border-zinc-700 dark:bg-zinc-900/95">
+          <div className="mb-2 flex items-start justify-between gap-2">
             <div>
-              <p className="text-sm font-semibold text-slate-900 dark:text-white">QuickStay AI Concierge</p>
-              <p className="text-xs text-slate-500 dark:text-slate-300">Always-on travel assistant</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">QuickStay AI</p>
+              <p className="text-xs text-slate-500 dark:text-slate-300">Concierge assistant</p>
             </div>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="rounded-full bg-slate-100 p-1 text-slate-500 transition hover:bg-slate-200"
+              className="rounded-full bg-slate-100 p-1 text-slate-500 transition hover:bg-slate-200 dark:bg-zinc-800 dark:text-slate-300"
+              aria-label="Close chat"
             >
               ✕
             </button>
@@ -129,7 +132,7 @@ const AIConcierge = () => {
 
           <div
             ref={scrollRef}
-            className="h-72 space-y-3 overflow-y-auto rounded-2xl bg-slate-50/70 p-3 text-sm text-slate-800 dark:bg-zinc-800/80 dark:text-slate-100"
+            className="min-h-0 flex-1 space-y-2 overflow-y-auto rounded-xl bg-slate-50/80 p-2.5 text-sm text-slate-800 dark:bg-zinc-800/80 dark:text-slate-100"
           >
             {messages.map((msg) => (
               <div
@@ -137,7 +140,7 @@ const AIConcierge = () => {
                 className={`flex ${msg.role === "assistant" ? "justify-start" : "justify-end"}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3 py-2 shadow-sm ${
+                  className={`max-w-[88%] break-words whitespace-pre-wrap rounded-xl px-3 py-2 shadow-sm ${
                     msg.role === "assistant"
                       ? "bg-white text-slate-800 dark:bg-zinc-900 dark:text-slate-100"
                       : "bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
@@ -149,7 +152,7 @@ const AIConcierge = () => {
             ))}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="rounded-2xl bg-white px-3 py-2 text-xs text-slate-500 dark:bg-zinc-900 dark:text-slate-200">
+                <div className="rounded-xl bg-white px-3 py-2 text-xs text-slate-500 dark:bg-zinc-900 dark:text-slate-200">
                   Thinking...
                 </div>
               </div>
@@ -158,30 +161,36 @@ const AIConcierge = () => {
 
           {error && <p className="mt-2 text-xs text-rose-500">{error}</p>}
 
-          <div className="mt-3 flex items-end gap-2">
-            <textarea
+          <div className="mt-2 flex items-center gap-2">
+            <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendPrompt();
+                }
+              }}
               placeholder="Ask about stays, payments, or support"
-              className="h-16 flex-1 resize-none rounded-2xl border border-slate-200 bg-white/80 p-3 text-sm text-slate-800 outline-none focus:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-slate-100"
+              className="h-11 flex-1 rounded-xl border border-slate-200 bg-white/80 px-3 text-sm text-slate-800 outline-none focus:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-slate-100"
             />
             <button
               type="button"
               onClick={() => sendPrompt()}
               disabled={!input.trim() || isTyping}
-              className="rounded-2xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-4 py-3 text-sm font-semibold text-white shadow-lg transition disabled:cursor-not-allowed disabled:opacity-60"
+              className="h-11 rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-3.5 text-sm font-semibold text-white shadow-lg transition disabled:cursor-not-allowed disabled:opacity-60"
             >
               Send
             </button>
           </div>
 
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
             {quickPrompts.map((prompt) => (
               <button
                 key={prompt}
                 type="button"
                 onClick={() => sendPrompt(prompt)}
-                className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600 transition hover:border-indigo-400 hover:text-indigo-500 dark:border-zinc-700 dark:text-slate-200"
+                className="shrink-0 rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600 transition hover:border-indigo-400 hover:text-indigo-500 dark:border-zinc-700 dark:text-slate-200"
               >
                 {prompt}
               </button>
@@ -193,10 +202,10 @@ const AIConcierge = () => {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex items-center gap-3 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-4 py-3 text-white shadow-2xl"
+        className="pointer-events-auto flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-3 py-2.5 text-white shadow-2xl"
       >
-        <span className="text-lg">💬</span>
-        <div className="text-left">
+        <span className="text-base">💬</span>
+        <div className="hidden text-left sm:block">
           <p className="text-xs uppercase tracking-widest text-white/80">Need help?</p>
           <p className="text-sm font-semibold">Ask QuickStay AI</p>
         </div>

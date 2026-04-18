@@ -5,6 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 // Create axios instance
 const apiClient = axios.create({
   baseURL: API_URL,
+  timeout: Number(import.meta.env.VITE_API_TIMEOUT_MS || 25000),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -44,9 +45,14 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
+      const requestUrl = String(error.config?.url || '');
+      const isAiChatRequest = requestUrl.includes('/ai/chat');
+
       // Server responded with error status
       const message = error.response.data?.message || 'An error occurred';
-      console.error('API Error:', message);
+      if (!(isAiChatRequest && error.response.status >= 500)) {
+        console.error('API Error:', message);
+      }
       
       // Handle specific status codes
       if (error.response.status === 401) {
@@ -54,7 +60,7 @@ apiClient.interceptors.response.use(
         console.error('Unauthorized access');
       } else if (error.response.status === 404) {
         console.error('Resource not found');
-      } else if (error.response.status === 500) {
+      } else if (error.response.status === 500 && !isAiChatRequest) {
         console.error('Server error');
       }
     } else if (error.request) {

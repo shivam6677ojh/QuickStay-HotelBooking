@@ -1,4 +1,7 @@
+import axios from 'axios';
 import apiClient from './client';
+
+const LOCAL_DEV_API_URL = 'http://localhost:5000/api';
 
 // Room API services
 export const roomService = {
@@ -145,8 +148,70 @@ export const userService = {
 // AI concierge services
 export const aiService = {
   chat: async (payload) => {
-    const response = await apiClient.post('/ai/chat', payload);
-    return response.data;
+    const configuredApiUrl = String(import.meta.env.VITE_API_URL || '');
+    const forceLocalInDev =
+      import.meta.env.DEV &&
+      (String(import.meta.env.VITE_AI_USE_LOCAL || 'true').toLowerCase() === 'true' ||
+        configuredApiUrl.includes('vercel.app'));
+
+    if (forceLocalInDev) {
+      try {
+        const localResponse = await axios.post(`${LOCAL_DEV_API_URL}/ai/chat`, payload, {
+          timeout: Number(import.meta.env.VITE_API_TIMEOUT_MS || 25000),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        return localResponse.data;
+      } catch {
+        return {
+          success: true,
+          source: 'client-fallback',
+          message:
+            'Local AI server is not reachable right now. Start backend on port 5000 or disable local AI override with VITE_AI_USE_LOCAL=false.',
+        };
+      }
+    }
+
+    try {
+      const response = await apiClient.post('/ai/chat', payload);
+      return response.data;
+    } catch (error) {
+      const status = error?.response?.status;
+      const messageFromServer = error?.response?.data?.message;
+
+      const shouldTryLocalDevFailover =
+        import.meta.env.DEV &&
+        (status >= 500 || !status) &&
+        !String(import.meta.env.VITE_API_URL || '').includes('localhost');
+
+      if (shouldTryLocalDevFailover) {
+        try {
+          const localResponse = await axios.post(`${LOCAL_DEV_API_URL}/ai/chat`, payload, {
+            timeout: Number(import.meta.env.VITE_API_TIMEOUT_MS || 25000),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          return localResponse.data;
+        } catch {
+          // Fall through to client fallback message.
+        }
+      }
+
+      // Keep chatbot UX stable even when upstream AI provider or serverless function fails.
+      if (status >= 500 || !status) {
+        return {
+          success: true,
+          source: 'client-fallback',
+          message:
+            messageFromServer ||
+            "The AI service is temporarily unavailable. I can still help with rooms, bookings, payments, and owner dashboard guidance. Tell me your destination and dates.",
+        };
+      }
+
+      throw error;
+    }
   },
 };
 
